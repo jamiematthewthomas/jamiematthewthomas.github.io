@@ -386,8 +386,8 @@
       document.getElementById("root").innerHTML = `
         <div class="cards">
           ${card('bike',  'Nearest bike', nearestBike)}
-          ${nearestEbike ? card('ebike', 'Nearest e-bike', nearestEbike) : ''}
           ${card('space', 'Nearest free space', nearestSpace)}
+          ${nearestEbike ? card('ebike', 'Nearest e-bike', nearestEbike) : ''}
         </div>
         <div class="refresh-row">
           <span class="updated-time">Updated ${updatedAt}</span>
