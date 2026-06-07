@@ -14,7 +14,7 @@ Cards are ordered: nearest bike, nearest free space, nearest e-bike (hidden if n
 
 Each card contains:
 - Station name and distance
-- Counts of standard bikes, e-bikes, and free spaces (stacked vertically)
+- Counts of standard bikes, e-bikes, and free spaces in a single row with icons, coloured red/green/blue
 - A capacity bar across the full card width (standard bikes / e-bikes / empty spaces / in use)
 - A map of the dock's location taking up half the card width — tap to open Google Maps, searching for the dock by name
 
@@ -30,6 +30,7 @@ Lives in `santandercycles/` — no framework, no build step.
 
 **Dependencies (CDN):**
 - [Leaflet](https://leafletjs.com/) — map rendering, using OpenStreetMap tiles in light mode and CartoDB Dark Matter tiles in dark mode
+- [Material Symbols Outlined](https://fonts.google.com/icons) — icons for card headers and counters
 
 ### UI
 
