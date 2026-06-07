@@ -29,6 +29,8 @@ Relevant property keys:
 ### Geolocation API
 Standard browser `navigator.geolocation.getCurrentPosition`. No timeout is set (default `Infinity`) — this is intentional so that the browser's permission prompt doesn't race against a timeout. Error code `1` (permission denied) and code `2` (position unavailable) are handled with distinct messages.
 
+The geolocation request and TfL fetch are fired simultaneously at the start of `init()` and awaited together with `Promise.allSettled` — neither blocks the other. Errors are checked sequentially (geo first) so the right message is always shown.
+
 ## Cards
 
 Card order: nearest bike → nearest free space → nearest e-bike (omitted entirely if no e-bikes available).

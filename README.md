@@ -20,9 +20,8 @@ Each card contains:
 
 ### How it works
 
-1. Requests your location via the browser Geolocation API
-2. Fetches all ~800 docking stations from the [TfL BikePoint API](https://api.tfl.gov.uk/BikePoint) (no API key required)
-3. Ranks stations by straight-line distance using the Haversine formula
+1. Requests your location via the browser Geolocation API and fetches all ~800 docking stations from the [TfL BikePoint API](https://api.tfl.gov.uk/BikePoint) in parallel (no API key required)
+2. Ranks stations by straight-line distance using the Haversine formula
 
 ### Tech
 

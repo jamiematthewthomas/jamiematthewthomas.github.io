@@ -476,31 +476,30 @@
     async function init() {
       showSkeleton();
 
-      // Step 1: get the user's current position via the Geolocation API.
-      let userLat, userLon;
-      try {
-        const pos = await new Promise((res, rej) =>
-          navigator.geolocation.getCurrentPosition(res, rej)
-        );
-        userLat = pos.coords.latitude;
-        userLon = pos.coords.longitude;
-      } catch (e) {
+      // Geolocation and the TfL fetch are independent — kick both off immediately
+      // and wait for them together so neither blocks the other.
+      const geoPromise = new Promise((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej)
+      );
+      const fetchPromise = fetch(TFL)
+        .then(r => { if (!r.ok) throw new Error(); return r.json(); });
+
+      const [geoResult, fetchResult] = await Promise.allSettled([geoPromise, fetchPromise]);
+
+      if (geoResult.status === 'rejected') {
+        const e = geoResult.reason;
         showError(e.code === 1
           ? "Location access denied."
           : "Couldn't get your location. Check your connection.");
         return;
       }
-
-      // Step 2: fetch all docking stations from TfL.
-      let points;
-      try {
-        const res = await fetch(TFL);
-        if (!res.ok) throw new Error();
-        points = await res.json();
-      } catch {
+      if (fetchResult.status === 'rejected') {
         showError("Couldn't load dock data. Check your connection.");
         return;
       }
+
+      const { latitude: userLat, longitude: userLon } = geoResult.value.coords;
+      const points = fetchResult.value;
 
       // Capture the fetch time before processing so the timestamp reflects when
       // the data was retrieved, not when rendering finished.
@@ -509,12 +508,11 @@
       // Step 3: flatten each station into a plain object with the fields we need,
       // and calculate its distance from the user.
       const enriched = points.map(p => {
-        const ebikes = prop(p, "NbEBikes");
         return {
           name: p.commonName.replace(/^Santander Cycles:\s*/i, ""),
           lat: p.lat,
           lon: p.lon,
-          ebikes,
+          ebikes: prop(p, "NbEBikes"),
           stdBikes: prop(p, "NbStandardBikes"),
           spaces: prop(p, "NbEmptyDocks"),
           docks: prop(p, "NbDocks"),         // total dock capacity, used by the capacity bar
@@ -523,16 +521,16 @@
       });
 
       // Step 4: build sorted shortlists for each card type.
-      const withBikes  = enriched.filter(p => p.stdBikes > 0 || p.ebikes > 0).sort((a, b) => a.dist - b.dist);
+      const withStdBikes  = enriched.filter(p => p.stdBikes > 0 || p.ebikes > 0).sort((a, b) => a.dist - b.dist);
       const withSpaces = enriched.filter(p => p.spaces  > 0).sort((a, b) => a.dist - b.dist);
       const withEbikes = enriched.filter(p => p.ebikes  > 0).sort((a, b) => a.dist - b.dist);
 
-      if (!withBikes.length || !withSpaces.length) {
+      if (!withStdBikes.length || !withSpaces.length) {
         showError("No docks with bikes or spaces found nearby.");
         return;
       }
 
-      renderCards(withBikes[0], withEbikes[0] ?? null, withSpaces[0], updatedAt);
+      renderCards(withStdBikes[0], withEbikes[0] ?? null, withSpaces[0], updatedAt);
     }
 
     init();
