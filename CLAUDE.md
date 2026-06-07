@@ -39,7 +39,7 @@ Three card types, each with a distinct accent colour defined as a CSS custom pro
 
 | Type | CSS class | CSS variable | Colour | Shows |
 |---|---|---|---|---|
-| Nearest bike | `bike` | `--color-bike` | Red `#e31837` | Closest dock with any bike available |
+| Nearest bike | `bike` | `--color-bike` | Red `#e31837` | Closest dock with a standard bike available |
 | Nearest free space | `space` | `--color-space` | Blue `#1a6fc4` | Closest dock with an empty space |
 | Nearest e-bike | `ebike` | `--color-ebike` | Green `#16a34a` | Closest dock with an e-bike |
 

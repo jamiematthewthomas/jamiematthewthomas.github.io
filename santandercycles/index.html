@@ -521,7 +521,7 @@
       });
 
       // Step 4: build sorted shortlists for each card type.
-      const withStdBikes  = enriched.filter(p => p.stdBikes > 0 || p.ebikes > 0).sort((a, b) => a.dist - b.dist);
+      const withStdBikes  = enriched.filter(p => p.stdBikes > 0).sort((a, b) => a.dist - b.dist);
       const withSpaces = enriched.filter(p => p.spaces  > 0).sort((a, b) => a.dist - b.dist);
       const withEbikes = enriched.filter(p => p.ebikes  > 0).sort((a, b) => a.dist - b.dist);
 
