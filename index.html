@@ -88,6 +88,8 @@
       padding: 16px;
       box-shadow: var(--card-shadow);
       flex: 1;
+      display: flex;
+      flex-direction: column;
       /* Remove the default blue tap flash on mobile WebKit. */
       -webkit-tap-highlight-color: transparent;
       transition: transform 0.12s ease, box-shadow 0.12s ease;
@@ -135,14 +137,16 @@
       border-radius: 999px;
       overflow: hidden;
       display: flex;
-      margin: 12px 0 10px;
+      margin-top: 12px;
     }
 
     .cap-seg { height: 100%; }
 
     .card-meta {
       display: flex;
-      gap: 16px;
+      flex-direction: column;
+      justify-content: space-evenly;
+      flex: 1;
       font-size: 13px;
       color: var(--text-secondary);
     }
@@ -158,12 +162,25 @@
       color: var(--text-muted);
     }
 
+    .card-body {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      flex: 1;
+    }
+
+    .card-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
     .card-map {
       position: relative;
-      height: 110px;
+      flex: 1;
       border-radius: 10px;
       overflow: hidden;
-      margin-top: 12px;
     }
 
     /* Transparent overlay that captures taps and opens Google Maps.
@@ -314,14 +331,18 @@
     function card(type, label, p) {
       return `
         <div class="card ${type}">
-          <div class="card-header">${ICON[type]}<span class="card-label">${label}</span></div>
-          <div class="card-name">${p.name}</div>
-          ${capBar(p)}
-          <div class="card-meta">${bikeMeta(p)}</div>
-          <div class="card-distance">${fmtDist(p.dist)}</div>
-          <div id="map-${type}" class="card-map">
-            <a href="${mapsLink(p.lat, p.lon, p.name)}" target="_blank" rel="noopener" class="card-map-link"></a>
+          <div class="card-body">
+            <div class="card-content">
+              <div class="card-header">${ICON[type]}<span class="card-label">${label}</span></div>
+              <div class="card-name">${p.name}</div>
+              <div class="card-distance">${fmtDist(p.dist)}</div>
+              <div class="card-meta">${bikeMeta(p)}</div>
+            </div>
+            <div id="map-${type}" class="card-map">
+              <a href="${mapsLink(p.lat, p.lon, p.name)}" target="_blank" rel="noopener" class="card-map-link"></a>
+            </div>
           </div>
+          ${capBar(p)}
         </div>
       `;
     }
@@ -360,19 +381,24 @@
       activeMaps = [];
       const skelCard = `
         <div class="card">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-            <div class="skel" style="width:16px;height:16px;border-radius:50%"></div>
-            <div class="skel" style="width:90px;height:10px;border-radius:4px"></div>
+          <div class="card-body">
+            <div class="card-content">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                <div class="skel" style="width:16px;height:16px;border-radius:50%"></div>
+                <div class="skel" style="width:90px;height:10px;border-radius:4px"></div>
+              </div>
+              <div class="skel" style="width:90%;height:18px;border-radius:4px"></div>
+              <div class="skel" style="width:65%;height:18px;border-radius:4px;margin-top:6px"></div>
+              <div class="skel" style="width:60px;height:12px;border-radius:4px;margin-top:10px"></div>
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly">
+                <div class="skel" style="width:70px;height:13px;border-radius:4px"></div>
+                <div class="skel" style="width:60px;height:13px;border-radius:4px"></div>
+                <div class="skel" style="width:65px;height:13px;border-radius:4px"></div>
+              </div>
+            </div>
+            <div class="skel" style="flex:1;border-radius:10px"></div>
           </div>
-          <div class="skel" style="width:70%;height:18px;border-radius:4px"></div>
-          <div class="skel" style="width:50%;height:18px;border-radius:4px;margin-top:6px"></div>
-          <div class="skel" style="height:6px;border-radius:999px;margin:14px 0 12px"></div>
-          <div style="display:flex;gap:16px">
-            <div class="skel" style="width:60px;height:13px;border-radius:4px"></div>
-            <div class="skel" style="width:55px;height:13px;border-radius:4px"></div>
-            <div class="skel" style="width:50px;height:13px;border-radius:4px"></div>
-          </div>
-          <div class="skel" style="height:110px;border-radius:10px;margin-top:12px"></div>
+          <div class="skel" style="height:6px;border-radius:999px;margin-top:12px"></div>
         </div>
       `;
       document.getElementById("root").innerHTML = `<div class="cards">${skelCard.repeat(3)}</div>`;

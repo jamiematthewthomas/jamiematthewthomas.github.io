@@ -4,15 +4,13 @@ A minimal web app that shows you the nearest Santander Cycles docking stations b
 
 ## What it shows
 
-- **Nearest bike** — the closest dock that has at least one bike available
-- **Nearest e-bike** — the closest dock with an e-bike (hidden if none are available)
-- **Nearest free space** — the closest dock with an empty slot for returning a bike
+Cards are ordered: nearest bike, nearest free space, nearest e-bike (hidden if none available).
 
-Each card shows:
-- A capacity bar (standard bikes / e-bikes / empty spaces / in use)
-- Counts of standard bikes, e-bikes, and free spaces
-- Distance from your current location
-- A small map of the dock's location — tap to open Google Maps, searching for the dock by name
+Each card contains:
+- Station name and distance
+- Counts of standard bikes, e-bikes, and free spaces (stacked vertically)
+- A capacity bar across the full card width (standard bikes / e-bikes / empty spaces / in use)
+- A map of the dock's location taking up half the card width — tap to open Google Maps, searching for the dock by name
 
 ## How it works
 
