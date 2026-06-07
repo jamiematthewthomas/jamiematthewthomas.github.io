@@ -471,12 +471,14 @@
       let userLat, userLon;
       try {
         const pos = await new Promise((res, rej) =>
-          navigator.geolocation.getCurrentPosition(res, rej, { timeout: 10000 })
+          navigator.geolocation.getCurrentPosition(res, rej)
         );
         userLat = pos.coords.latitude;
         userLon = pos.coords.longitude;
-      } catch {
-        showError("Location access denied or unavailable.");
+      } catch (e) {
+        showError(e.code === 1
+          ? "Location access denied."
+          : "Couldn't get your location. Check your connection.");
         return;
       }
 

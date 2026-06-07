@@ -27,7 +27,7 @@ Relevant property keys:
 `NbBikes` (total bikes) is intentionally not used — standard and e-bike counts are fetched directly so they can be displayed separately.
 
 ### Geolocation API
-Standard browser `navigator.geolocation.getCurrentPosition`. Times out after 10 seconds.
+Standard browser `navigator.geolocation.getCurrentPosition`. No timeout is set (default `Infinity`) — this is intentional so that the browser's permission prompt doesn't race against a timeout. Error code `1` (permission denied) and code `2` (position unavailable) are handled with distinct messages.
 
 ## Cards
 
