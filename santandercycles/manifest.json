@@ -1,6 +1,6 @@
 {
-  "name": "Santander Cycles",
-  "short_name": "Cycles",
+  "name": "Cycle Docks",
+  "short_name": "Cycle Docks",
   "start_url": "/santandercycles/",
   "display": "standalone",
   "background_color": "#f0f0f0",
