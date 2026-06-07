@@ -251,6 +251,12 @@
       text-decoration: underline;
     }
 
+    .byline-link {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-decoration: underline;
+    }
+
     .material-symbols-outlined {
       font-family: 'Material Symbols Outlined';
       font-size: 16px;
@@ -444,7 +450,10 @@
         </div>
         <div class="refresh-row">
           <span class="updated-time">Updated ${updatedAt}</span>
+          <span class="updated-time" aria-hidden="true">·</span>
           <button class="refresh-btn" onclick="init()">Refresh</button>
+          <span class="updated-time" aria-hidden="true">·</span>
+          <span class="updated-time">Written by <a href="https://jamiethomas.dev" target="_blank" rel="noopener" class="byline-link">Jamie Thomas</a></span>
         </div>
       `;
 
