@@ -1,8 +1,8 @@
-# Santander Cycles — project notes for Claude
+# Bike and Dock Finder — project notes for Claude
 
 ## What this is
 
-A single-file web app that shows the nearest Santander Cycles docking stations to the user's current location. Hosted on GitHub Pages at the repo root.
+A single-file web app ("Bike and Dock Finder") that shows the nearest Santander Cycles docking stations to the user's current location. Hosted on GitHub Pages at the repo root.
 
 ## Architecture
 

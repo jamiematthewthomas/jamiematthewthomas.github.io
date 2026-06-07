@@ -4,7 +4,7 @@ Personal GitHub Pages site. `index.html` is a landing page linking to projects.
 
 ---
 
-## Santander Cycles (`santandercycles/`)
+## Bike and Dock Finder (`santandercycles/`)
 
 A minimal web app that shows you the nearest Santander Cycles docking stations based on your current location.
 

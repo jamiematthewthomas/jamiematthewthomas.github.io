@@ -1,6 +1,6 @@
 {
-  "name": "Cycle Docks",
-  "short_name": "Cycle Docks",
+  "name": "Bike and Dock Finder",
+  "short_name": "Bike and Dock Finder",
   "start_url": "/santandercycles/",
   "display": "standalone",
   "background_color": "#f0f0f0",
