@@ -6,7 +6,7 @@ A single-file web app that shows the nearest Santander Cycles docking stations t
 
 ## Architecture
 
-Everything lives in `index.html` — HTML, CSS, and JS are all inline. Leaflet is loaded from CDN. There is no build step, no package manager, and no other framework. Keeping it as a single file is intentional; it makes it trivially deployable and inspectable.
+The Santander Cycles app lives in `santandercycles/index.html` — HTML, CSS, and JS are all inline. Leaflet is loaded from CDN. There is no build step, no package manager, and no other framework. Related files (`manifest.json`, `sw.js`, `icon.svg`) sit alongside it in the same folder. The landing page is at the repo root in `index.html`.
 
 ## Key APIs
 

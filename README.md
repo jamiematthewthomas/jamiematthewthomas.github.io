@@ -4,7 +4,7 @@ Personal GitHub Pages site. `index.html` is a landing page linking to projects.
 
 ---
 
-## Santander Cycles (`santandercycles.html`)
+## Santander Cycles (`santandercycles/`)
 
 A minimal web app that shows you the nearest Santander Cycles docking stations based on your current location.
 
@@ -26,7 +26,7 @@ Each card contains:
 
 ### Tech
 
-Single `santandercycles.html` file — no framework, no build step.
+Lives in `santandercycles/` — no framework, no build step.
 
 **Dependencies (CDN):**
 - [Leaflet](https://leafletjs.com/) — map rendering, using OpenStreetMap tiles in light mode and CartoDB Dark Matter tiles in dark mode
