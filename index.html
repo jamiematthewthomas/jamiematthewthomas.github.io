@@ -2,20 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- viewport-fit=cover is required for env(safe-area-inset-*) to take effect. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Santander Cycles</title>
   <style>
+    /* Colour tokens — overridden for dark mode below. */
+    :root {
+      --page-bg:        #f0f0f0;
+      --card-bg:        #ffffff;
+      --card-shadow:    0 1px 4px rgba(0,0,0,0.08);
+      --text-primary:   #111111;
+      --text-secondary: #555555;
+      --text-muted:     #aaaaaa;
+      --text-label:     #888888;
+      --bar-bg:         #ebebeb;
+      --skel-a:         #e8e8e8;
+      --skel-b:         #f0f0f0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page-bg:        #111111;
+        --card-bg:        #1c1c1e;
+        --card-shadow:    0 1px 4px rgba(0,0,0,0.4);
+        --text-primary:   #ebebeb;
+        --text-secondary: #888888;
+        --text-muted:     #4a4a4a;
+        --text-label:     #555555;
+        --bar-bg:         #2c2c2e;
+        --skel-a:         #2c2c2e;
+        --skel-b:         #3a3a3c;
+      }
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f0f0f0;
+      background: var(--page-bg);
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
+      /* Respect notch / Dynamic Island / home indicator on iOS. */
+      padding: max(16px, env(safe-area-inset-top))
+               max(8px,  env(safe-area-inset-right))
+               max(16px, env(safe-area-inset-bottom))
+               max(8px,  env(safe-area-inset-left));
     }
 
     h1 {
@@ -23,23 +56,46 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #888;
-      margin-bottom: 20px;
+      color: var(--text-label);
+      margin-bottom: 12px;
+    }
+
+    /* #root grows to fill the remaining vertical space after the h1. When showing
+     * the loading/error state the single child is centred inside it; when showing
+     * cards the .cards flex child expands to fill the full height. */
+    #root {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      width: 100%;
+      max-width: 600px;
     }
 
     .cards {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
-      max-width: 400px;
+      flex: 1;
     }
 
     .card {
-      background: white;
+      background: var(--card-bg);
       border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 16px;
+      box-shadow: var(--card-shadow);
+      flex: 1;
+      /* Remove the default blue tap flash on mobile WebKit. */
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    /* Subtle press-down effect when the user taps a card. */
+    .card:active {
+      transform: scale(0.985);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     .card-header {
@@ -64,7 +120,7 @@
     .card-name {
       font-size: 17px;
       font-weight: 600;
-      color: #111;
+      color: var(--text-primary);
       line-height: 1.3;
     }
 
@@ -74,7 +130,7 @@
      */
     .cap-bar {
       height: 6px;
-      background: #ebebeb;
+      background: var(--bar-bg);
       border-radius: 999px;
       overflow: hidden;
       display: flex;
@@ -87,23 +143,23 @@
       display: flex;
       gap: 16px;
       font-size: 13px;
-      color: #555;
+      color: var(--text-secondary);
     }
 
     .card-meta span strong {
-      color: #111;
+      color: var(--text-primary);
       font-weight: 700;
     }
 
     .card-distance {
       margin-top: 10px;
       font-size: 12px;
-      color: #aaa;
+      color: var(--text-muted);
     }
 
     .status {
       font-size: 15px;
-      color: #888;
+      color: var(--text-label);
       text-align: center;
     }
 
@@ -129,22 +185,34 @@
 
     .updated-time {
       font-size: 12px;
-      color: #bbb;
+      color: var(--text-muted);
     }
 
     .refresh-btn {
       background: none;
       border: none;
-      color: #aaa;
+      color: var(--text-muted);
       font-size: 12px;
       cursor: pointer;
       text-decoration: underline;
+    }
+
+    /* Skeleton shimmer for the loading state. */
+    @keyframes shimmer {
+      from { background-position: -600px 0; }
+      to   { background-position:  600px 0; }
+    }
+
+    .skel {
+      background: linear-gradient(90deg, var(--skel-a) 25%, var(--skel-b) 50%, var(--skel-a) 75%);
+      background-size: 1200px 100%;
+      animation: shimmer 1.5s infinite linear;
     }
   </style>
 </head>
 <body>
   <h1>Santander Cycles</h1>
-  <div id="root"><p class="status">Finding your location…</p></div>
+  <div id="root"></div>
 
   <script>
     // TfL BikePoint — returns all ~800 Santander Cycles docking stations in London.
@@ -180,12 +248,12 @@
       return m < 1000 ? `${Math.round(m)}m away` : `${(m/1000).toFixed(1)}km away`;
     }
 
-    function mapsLink(lat, lon, name) {
-      return `https://maps.google.com/?q=${encodeURIComponent(name)}&ll=${lat},${lon}`;
+    function mapsLink(lat, lon) {
+      return `https://maps.google.com/?ll=${lat},${lon}`;
     }
 
     function stationLink(p) {
-      return `<a href="${mapsLink(p.lat, p.lon, p.name)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${p.name}</a>`;
+      return `<a href="${mapsLink(p.lat, p.lon)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${p.name}</a>`;
     }
 
     // Builds a segmented bar showing dock composition at a glance.
@@ -203,7 +271,7 @@
 
     function bikeMeta(p) {
       return `
-        <span><strong>${p.stdBikes}</strong> standard</span>
+        <span><strong>${p.stdBikes}</strong> bike${p.stdBikes !== 1 ? 's' : ''}</span>
         <span><strong>${p.ebikes}</strong> e-bike${p.ebikes !== 1 ? 's' : ''}</span>
         <span><strong>${p.spaces}</strong> space${p.spaces !== 1 ? 's' : ''}</span>
       `;
@@ -219,6 +287,27 @@
           <div class="card-distance">${fmtDist(p.dist)}</div>
         </div>
       `;
+    }
+
+    // Renders three shimmering placeholder cards while location and dock data load.
+    function showSkeleton() {
+      const skelCard = `
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div class="skel" style="width:16px;height:16px;border-radius:50%"></div>
+            <div class="skel" style="width:90px;height:10px;border-radius:4px"></div>
+          </div>
+          <div class="skel" style="width:70%;height:18px;border-radius:4px"></div>
+          <div class="skel" style="width:50%;height:18px;border-radius:4px;margin-top:6px"></div>
+          <div class="skel" style="height:6px;border-radius:999px;margin:14px 0 12px"></div>
+          <div style="display:flex;gap:16px">
+            <div class="skel" style="width:60px;height:13px;border-radius:4px"></div>
+            <div class="skel" style="width:55px;height:13px;border-radius:4px"></div>
+            <div class="skel" style="width:50px;height:13px;border-radius:4px"></div>
+          </div>
+        </div>
+      `;
+      document.getElementById("root").innerHTML = `<div class="cards">${skelCard.repeat(3)}</div>`;
     }
 
     // The e-bike card is omitted entirely when no e-bikes are available anywhere.
@@ -246,7 +335,7 @@
     }
 
     async function init() {
-      document.getElementById("root").innerHTML = `<p class="status">Finding your location…</p>`;
+      showSkeleton();
 
       // Step 1: get the user's current position via the Geolocation API.
       let userLat, userLon;
@@ -260,8 +349,6 @@
         showError("Location access denied or unavailable.");
         return;
       }
-
-      document.getElementById("root").innerHTML = `<p class="status">Loading dock data…</p>`;
 
       // Step 2: fetch all docking stations from TfL.
       let points;
