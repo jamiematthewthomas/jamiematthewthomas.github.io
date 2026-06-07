@@ -1,1 +1,241 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Santander Cycles</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f0f0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    h1 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card.bike .card-label { color: #e31837; }
+    .card.space .card-label { color: #1a6fc4; }
+
+    .card-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: #111;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .card-meta span strong {
+      color: #111;
+      font-weight: 700;
+    }
+
+    .card-distance {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .status {
+      font-size: 15px;
+      color: #888;
+      text-align: center;
+    }
+
+    .retry-btn {
+      margin-top: 16px;
+      padding: 10px 24px;
+      border: none;
+      border-radius: 999px;
+      background: #e31837;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .refresh-row {
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .refresh-btn {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Santander Cycles</h1>
+  <div id="root"><p class="status">Finding your location…</p></div>
+
+  <script>
+    const TFL = "https://api.tfl.gov.uk/BikePoint";
+
+    function haversineM(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 +
+                Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+                Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function prop(point, key) {
+      const p = point.additionalProperties?.find(x => x.key === key);
+      return p ? parseInt(p.value, 10) : 0;
+    }
+
+    function fmtDist(m) {
+      return m < 1000 ? `${Math.round(m)}m away` : `${(m/1000).toFixed(1)}km away`;
+    }
+
+    function mapsLink(lat, lon, name) {
+      return `https://maps.google.com/?q=${encodeURIComponent(name)}&ll=${lat},${lon}`;
+    }
+
+    function renderCards(nearestBike, nearestSpace) {
+      const root = document.getElementById("root");
+      root.innerHTML = `
+        <div class="cards">
+          <div class="card bike">
+            <div class="card-label">Nearest bike</div>
+            <div class="card-name">
+              <a href="${mapsLink(nearestBike.lat, nearestBike.lon, nearestBike.name)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">
+                ${nearestBike.name}
+              </a>
+            </div>
+            <div class="card-meta">
+              <span><strong>${nearestBike.bikes}</strong> bike${nearestBike.bikes !== 1 ? 's' : ''} available</span>
+              <span><strong>${nearestBike.spaces}</strong> space${nearestBike.spaces !== 1 ? 's' : ''} free</span>
+            </div>
+            <div class="card-distance">${fmtDist(nearestBike.dist)}</div>
+          </div>
+          <div class="card space">
+            <div class="card-label">Nearest free space</div>
+            <div class="card-name">
+              <a href="${mapsLink(nearestSpace.lat, nearestSpace.lon, nearestSpace.name)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">
+                ${nearestSpace.name}
+              </a>
+            </div>
+            <div class="card-meta">
+              <span><strong>${nearestSpace.spaces}</strong> space${nearestSpace.spaces !== 1 ? 's' : ''} free</span>
+              <span><strong>${nearestSpace.bikes}</strong> bike${nearestSpace.bikes !== 1 ? 's' : ''} available</span>
+            </div>
+            <div class="card-distance">${fmtDist(nearestSpace.dist)}</div>
+          </div>
+        </div>
+        <div class="refresh-row">
+          <button class="refresh-btn" onclick="init()">Refresh</button>
+        </div>
+      `;
+    }
+
+    function showError(msg) {
+      document.getElementById("root").innerHTML = `
+        <p class="status">${msg}</p>
+        <div style="text-align:center">
+          <button class="retry-btn" onclick="init()">Try again</button>
+        </div>
+      `;
+    }
+
+    async function init() {
+      document.getElementById("root").innerHTML = `<p class="status">Finding your location…</p>`;
+
+      let userLat, userLon;
+      try {
+        const pos = await new Promise((res, rej) =>
+          navigator.geolocation.getCurrentPosition(res, rej, { timeout: 10000 })
+        );
+        userLat = pos.coords.latitude;
+        userLon = pos.coords.longitude;
+      } catch {
+        showError("Location access denied or unavailable.");
+        return;
+      }
+
+      document.getElementById("root").innerHTML = `<p class="status">Loading dock data…</p>`;
+
+      let points;
+      try {
+        const res = await fetch(TFL);
+        if (!res.ok) throw new Error();
+        points = await res.json();
+      } catch {
+        showError("Couldn't load dock data. Check your connection.");
+        return;
+      }
+
+      const enriched = points.map(p => ({
+        name: p.commonName.replace(/^Santander Cycles:\s*/i, ""),
+        lat: p.lat,
+        lon: p.lon,
+        bikes: prop(p, "NbBikes"),
+        spaces: prop(p, "NbEmptyDocks"),
+        dist: haversineM(userLat, userLon, p.lat, p.lon),
+      }));
+
+      const withBikes  = enriched.filter(p => p.bikes > 0).sort((a, b) => a.dist - b.dist);
+      const withSpaces = enriched.filter(p => p.spaces > 0).sort((a, b) => a.dist - b.dist);
+
+      if (!withBikes.length || !withSpaces.length) {
+        showError("No docks with bikes or spaces found nearby.");
+        return;
+      }
+
+      renderCards(withBikes[0], withSpaces[0]);
+    }
+
+    init();
+  </script>
+</body>
+</html>
