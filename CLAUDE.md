@@ -45,6 +45,8 @@ Three card types, each with a distinct accent colour defined as a CSS custom pro
 
 The accent colours are consumed in CSS (card headers, counter row) and in JS via `getComputedStyle` (Leaflet dot markers). Hardcoded hex values for these colours should not appear anywhere else.
 
+The page background (`--page-bg`) is the same red as `--color-bike` in light mode, and a darker maroon (`#8b0f20`) in dark mode. Elements rendered directly on the page background (h1, status message, refresh row, retry button text) use `--text-on-bg` — a semi-transparent white — rather than `--text-muted` or `--text-label`, which are reserved for text inside cards.
+
 ## Card layout
 
 Each card is a flex column:
