@@ -12,7 +12,7 @@ Each card shows:
 - A capacity bar (standard bikes / e-bikes / empty spaces / in use)
 - Counts of standard bikes, e-bikes, and free spaces
 - Distance from your current location
-- A small map of the dock's location — tap to open in Google Maps
+- A small map of the dock's location — tap to open Google Maps, searching for the dock by name
 
 ## How it works
 

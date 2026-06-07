@@ -286,12 +286,8 @@
       return m < 1000 ? `${Math.round(m)}m away` : `${(m/1000).toFixed(1)}km away`;
     }
 
-    function mapsLink(lat, lon) {
-      return `https://maps.google.com/?ll=${lat},${lon}`;
-    }
-
-    function stationLink(p) {
-      return `<a href="${mapsLink(p.lat, p.lon)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${p.name}</a>`;
+    function mapsLink(lat, lon, name) {
+      return `https://maps.google.com/?q=${encodeURIComponent('Santander Cycles: ' + name)}&ll=${lat},${lon}`;
     }
 
     // Builds a segmented bar showing dock composition at a glance.
@@ -319,12 +315,12 @@
       return `
         <div class="card ${type}">
           <div class="card-header">${ICON[type]}<span class="card-label">${label}</span></div>
-          <div class="card-name">${stationLink(p)}</div>
+          <div class="card-name">${p.name}</div>
           ${capBar(p)}
           <div class="card-meta">${bikeMeta(p)}</div>
           <div class="card-distance">${fmtDist(p.dist)}</div>
           <div id="map-${type}" class="card-map">
-            <a href="${mapsLink(p.lat, p.lon)}" target="_blank" rel="noopener" class="card-map-link"></a>
+            <a href="${mapsLink(p.lat, p.lon, p.name)}" target="_blank" rel="noopener" class="card-map-link"></a>
           </div>
         </div>
       `;
