@@ -8,7 +8,11 @@ A minimal web app that shows you the nearest Santander Cycles docking stations b
 - **Nearest e-bike** — the closest dock with an e-bike (hidden if none are available)
 - **Nearest free space** — the closest dock with an empty slot for returning a bike
 
-Each card shows a capacity bar (standard bikes / e-bikes / empty spaces / in use) and links to Google Maps for directions.
+Each card shows:
+- A capacity bar (standard bikes / e-bikes / empty spaces / in use)
+- Counts of standard bikes, e-bikes, and free spaces
+- Distance from your current location
+- A small map of the dock's location — tap to open in Google Maps
 
 ## How it works
 
@@ -18,7 +22,17 @@ Each card shows a capacity bar (standard bikes / e-bikes / empty spaces / in use
 
 ## Tech
 
-Single `index.html` file — no framework, no build step, no dependencies.
+Single `index.html` file — no framework, no build step.
+
+**Dependencies (CDN):**
+- [Leaflet](https://leafletjs.com/) — map rendering, using OpenStreetMap tiles in light mode and CartoDB Dark Matter tiles in dark mode
+
+## UI
+
+- Dark mode support via `prefers-color-scheme`
+- Skeleton loading cards while location and dock data are fetched
+- Safe area insets for iPhone notch / Dynamic Island / home indicator
+- Tap feedback on cards
 
 ## Deployment
 
