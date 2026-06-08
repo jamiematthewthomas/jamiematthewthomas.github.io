@@ -78,7 +78,7 @@ Each map has a coloured dot marker matching the card's accent colour. Colours ar
 
 ## Capacity bar
 
-Three segments — red (standard bikes), green (e-bikes), light grey (empty spaces) — against a dark grey background representing bikes currently out with riders (total docks minus all three segments).
+Three segments — red (standard bikes), green (e-bikes), blue (empty spaces) — against a dark grey background representing bikes currently out with riders (total docks minus all three segments).
 
 ## Distance calculation
 
