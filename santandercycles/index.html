@@ -107,14 +107,6 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      /* Remove the default blue tap flash on mobile WebKit. */
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.12s ease;
-    }
-
-    /* Subtle press-down effect when the user taps a card. */
-    .card:active {
-      transform: scale(0.985);
     }
 
     /* Horizontal pager — each card type can hold several stations (nearest,
@@ -247,6 +239,8 @@
       position: absolute;
       inset: 0;
       z-index: 1000;
+      /* Remove the default blue tap flash on mobile WebKit. */
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* Keep Leaflet's attribution legible but unobtrusive. */
