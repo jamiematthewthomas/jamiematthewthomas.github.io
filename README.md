@@ -12,7 +12,9 @@ A minimal web app that shows you the nearest Santander Cycles docking stations b
 
 Cards are ordered: nearest bike, nearest free space, nearest e-bike (hidden if none available).
 
-Each card contains:
+Each card is horizontally swipeable, showing the nearest, 2nd nearest, and 3rd nearest station of that type as separate pages — the focused page sits centred with the next/previous page peeking in on either side as a hint that you can swipe.
+
+Each page contains:
 - Station name and distance
 - Counts of standard bikes, e-bikes, and free spaces in a single row with icons, coloured red/green/blue
 - A capacity bar across the full card width (standard bikes / e-bikes / empty spaces / in use)
@@ -37,6 +39,7 @@ Lives in `santandercycles/` — no framework, no build step.
 - Skeleton loading cards while location and dock data are fetched
 - Safe area insets for iPhone notch / Dynamic Island / home indicator
 - Tap feedback on cards
+- Swipeable cards, edge-to-edge with a peek of the adjacent page
 
 ---
 

@@ -52,6 +52,12 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      /* Horizontal safe-area insets, named so .cards can bleed past them. */
+      --inset-l: max(8px, env(safe-area-inset-left));
+      --inset-r: max(8px, env(safe-area-inset-right));
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--page-bg);
@@ -60,10 +66,7 @@
       flex-direction: column;
       align-items: center;
       /* Respect notch / Dynamic Island / home indicator on iOS. */
-      padding: max(16px, env(safe-area-inset-top))
-               max(8px,  env(safe-area-inset-right))
-               max(16px, env(safe-area-inset-bottom))
-               max(8px,  env(safe-area-inset-left));
+      padding: max(16px, env(safe-area-inset-top)) var(--inset-r) max(16px, env(safe-area-inset-bottom)) var(--inset-l);
     }
 
     h1 {
@@ -92,27 +95,67 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      width: 100%;
       flex: 1;
+      /* Bleed past the body's horizontal safe-area padding so cards run
+       * edge-to-edge and the swipe peek isn't cut off by a margin. */
+      width: calc(100% + var(--inset-l) + var(--inset-r));
+      margin-left: calc(-1 * var(--inset-l));
+      margin-right: calc(-1 * var(--inset-r));
     }
 
     .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: var(--card-shadow);
       flex: 1;
       display: flex;
       flex-direction: column;
       /* Remove the default blue tap flash on mobile WebKit. */
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      transition: transform 0.12s ease;
     }
 
     /* Subtle press-down effect when the user taps a card. */
     .card:active {
       transform: scale(0.985);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Horizontal pager — each card type can hold several stations (nearest,
+     * 2nd nearest, ...), swiped between with scroll-snap. The whole card
+     * (background, shadow, rounded corners) moves with the swipe, not just
+     * its contents. */
+    .card-scroll {
+      display: flex;
+      flex: 1;
+      gap: 10px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .card-scroll::-webkit-scrollbar { display: none; }
+
+    /* Spacers either side of the pages so the first/last page can still be
+     * scrolled to a centred position, matching the peek either side of the
+     * pages in between. */
+    .card-scroll::before,
+    .card-scroll::after {
+      content: '';
+      flex: 0 0 16px;
+    }
+
+    .card-page {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      /* Narrower than the container so the previous/next page peeks in on
+       * either side — a visual cue that the card can be swiped — and the
+       * focused page sits centred. */
+      flex: 0 0 calc(100% - 32px);
+      min-width: 0;
+      scroll-snap-align: center;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
     }
 
     .card-header {
@@ -316,6 +359,10 @@
     // Track live Leaflet instances so they can be torn down before re-rendering.
     let activeMaps = [];
 
+    // Track IntersectionObservers used to lazily init maps for non-first
+    // pages, so they can be disconnected before re-rendering.
+    let mapObservers = [];
+
     // Returns the great-circle distance in metres between two lat/lon points.
     function haversineM(lat1, lon1, lat2, lon2) {
       const R = 6371000;
@@ -363,23 +410,30 @@
       `;
     }
 
-    function card(type, label, p) {
-      return `
-        <div class="card ${type}">
+    // Ordinal prefixes for each page of a card — page 0 is "Nearest", page 1
+    // is "2nd nearest", and so on.
+    const ORDINAL = ['Nearest', '2nd nearest', '3rd nearest'];
+
+    // Each card is a horizontally swipeable pager: page 0 shows the closest
+    // station of this type, page 1 the second closest, etc.
+    function card(type, noun, points) {
+      const pages = points.map((p, i) => `
+        <div class="card-page">
           <div class="card-body">
             <div class="card-content">
-              <div class="card-header">${ICON[type]}<span class="card-label">${label}</span></div>
+              <div class="card-header">${ICON[type]}<span class="card-label">${ORDINAL[i]} ${noun}</span></div>
               <div class="card-name">${p.name}</div>
               <div class="card-distance">${fmtDist(p.dist)}</div>
               <div class="card-meta">${bikeMeta(p)}</div>
             </div>
-            <div id="map-${type}" class="card-map">
+            <div id="map-${type}-${i}" class="card-map">
               <a href="${mapsLink(p.lat, p.lon, p.name)}" target="_blank" rel="noopener" class="card-map-link"></a>
             </div>
           </div>
           ${capBar(p)}
         </div>
-      `;
+      `).join('');
+      return `<div class="card ${type}"><div class="card-scroll">${pages}</div></div>`;
     }
 
     // Creates a small non-interactive Leaflet map centred on the dock with a
@@ -410,45 +464,78 @@
       activeMaps.push(map);
     }
 
+    // Initialises the map for a card's first page immediately, and defers the
+    // rest until their page is scrolled into view (they're off-screen until
+    // the user swipes, so there's no need to load their tiles up front).
+    function initCardMaps(type, points) {
+      const scrollEl = document.querySelector(`.card.${type} .card-scroll`);
+      points.forEach((p, i) => {
+        const id = `map-${type}-${i}`;
+        if (i === 0) {
+          initMap(id, p.lat, p.lon, type);
+          return;
+        }
+        const el = document.getElementById(id);
+        if (!el) return;
+        const observer = new IntersectionObserver((entries, obs) => {
+          if (entries[0].isIntersecting) {
+            initMap(id, p.lat, p.lon, type);
+            obs.disconnect();
+          }
+        }, { root: scrollEl, threshold: 0.5 });
+        observer.observe(el);
+        mapObservers.push(observer);
+      });
+    }
+
     // Renders three shimmering placeholder cards while location and dock data load.
     function showSkeleton() {
       activeMaps.forEach(m => m.remove());
       activeMaps = [];
-      const skelCard = `
-        <div class="card">
-          <div class="card-body">
-            <div class="card-content">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-                <div class="skel" style="width:16px;height:16px;border-radius:50%"></div>
-                <div class="skel" style="width:90px;height:10px;border-radius:4px"></div>
+      mapObservers.forEach(o => o.disconnect());
+      mapObservers = [];
+      const skelPage = `
+          <div class="card-page">
+            <div class="card-body">
+              <div class="card-content">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                  <div class="skel" style="width:16px;height:16px;border-radius:50%"></div>
+                  <div class="skel" style="width:90px;height:10px;border-radius:4px"></div>
+                </div>
+                <div class="skel" style="width:90%;height:18px;border-radius:4px"></div>
+                <div class="skel" style="width:65%;height:18px;border-radius:4px;margin-top:6px"></div>
+                <div class="skel" style="width:60px;height:12px;border-radius:4px;margin-top:10px"></div>
+                <div style="display:flex;gap:16px;margin-top:auto;padding-top:8px">
+                  <div class="skel" style="width:40px;height:13px;border-radius:4px"></div>
+                  <div class="skel" style="width:40px;height:13px;border-radius:4px"></div>
+                  <div class="skel" style="width:40px;height:13px;border-radius:4px"></div>
+                </div>
               </div>
-              <div class="skel" style="width:90%;height:18px;border-radius:4px"></div>
-              <div class="skel" style="width:65%;height:18px;border-radius:4px;margin-top:6px"></div>
-              <div class="skel" style="width:60px;height:12px;border-radius:4px;margin-top:10px"></div>
-              <div style="display:flex;gap:16px;margin-top:auto;padding-top:8px">
-                <div class="skel" style="width:40px;height:13px;border-radius:4px"></div>
-                <div class="skel" style="width:40px;height:13px;border-radius:4px"></div>
-                <div class="skel" style="width:40px;height:13px;border-radius:4px"></div>
-              </div>
+              <div class="skel" style="flex:1;border-radius:10px"></div>
             </div>
-            <div class="skel" style="flex:1;border-radius:10px"></div>
+            <div class="skel" style="height:6px;border-radius:999px;margin-top:10px"></div>
           </div>
-          <div class="skel" style="height:6px;border-radius:999px;margin-top:10px"></div>
-        </div>
       `;
+      // Two pages per card so the second peeks into view, matching the real
+      // cards' swipe affordance.
+      const skelCard = `<div class="card"><div class="card-scroll">${skelPage}${skelPage}</div></div>`;
       document.getElementById("root").innerHTML = `<div class="cards">${skelCard.repeat(3)}</div>`;
     }
 
     // The e-bike card is omitted entirely when no e-bikes are available anywhere.
-    function renderCards(nearestBike, nearestEbike, nearestSpace, updatedAt) {
+    // Each card gets up to 3 stations (nearest, 2nd nearest, 3rd nearest) as
+    // horizontally swipeable pages.
+    function renderCards(bikes, ebikes, spaces, updatedAt) {
       activeMaps.forEach(m => m.remove());
       activeMaps = [];
+      mapObservers.forEach(o => o.disconnect());
+      mapObservers = [];
 
       document.getElementById("root").innerHTML = `
         <div class="cards">
-          ${card('bike',  'Nearest bike', nearestBike)}
-          ${card('space', 'Nearest dock', nearestSpace)}
-          ${nearestEbike ? card('ebike', 'Nearest e-bike', nearestEbike) : ''}
+          ${card('bike',  'bike', bikes)}
+          ${card('space', 'dock', spaces)}
+          ${ebikes.length ? card('ebike', 'e-bike', ebikes) : ''}
         </div>
         <div class="refresh-row">
           <span class="updated-time">Updated ${updatedAt}</span>
@@ -459,9 +546,9 @@
         </div>
       `;
 
-      initMap('map-bike',  nearestBike.lat,  nearestBike.lon,  'bike');
-      if (nearestEbike) initMap('map-ebike', nearestEbike.lat, nearestEbike.lon, 'ebike');
-      initMap('map-space', nearestSpace.lat, nearestSpace.lon, 'space');
+      initCardMaps('bike', bikes);
+      initCardMaps('space', spaces);
+      if (ebikes.length) initCardMaps('ebike', ebikes);
     }
 
     function showError(msg) {
@@ -532,7 +619,7 @@
         return;
       }
 
-      renderCards(withStdBikes[0], withEbikes[0] ?? null, withSpaces[0], updatedAt);
+      renderCards(withStdBikes.slice(0, 3), withEbikes.slice(0, 3), withSpaces.slice(0, 3), updatedAt);
     }
 
     init();

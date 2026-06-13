@@ -47,9 +47,23 @@ The accent colours are consumed in CSS (card headers, counter row) and in JS via
 
 The page background (`--page-bg`) is the same red as `--color-bike` in light mode, and a darker maroon (`#8b0f20`) in dark mode. Elements rendered directly on the page background (h1, status message, refresh row, retry button text) use `--text-on-bg` — a semi-transparent white — rather than `--text-muted` or `--text-label`, which are reserved for text inside cards.
 
+## Swipeable pager
+
+Each card type shows up to 3 stations (nearest, 2nd nearest, 3rd nearest) as horizontally swipeable pages, via `.card > .card-scroll > .card-page`:
+
+- **`.card`** — plain flex-column layout wrapper, no visual styling
+- **`.card-scroll`** — horizontal `overflow-x: auto` scroller with `scroll-snap-type: x mandatory`; `::before`/`::after` pseudo-element spacers (16px) let the first/last page scroll to a centred position
+- **`.card-page`** — the visual card (background, border-radius, box-shadow, padding). Sized `calc(100% - 32px)` with `scroll-snap-align: center`, so the focused page is centred with the previous/next page peeking in on either side — a visual cue that the card is swipeable
+
+The ordinal prefix for each page's `.card-label` comes from the `ORDINAL` constant (`Nearest`, `2nd nearest`, `3rd nearest`).
+
+`.cards` bleeds past the body's horizontal safe-area padding (negative margins sized from `--inset-l`/`--inset-r`) so the pages and their peeks run edge-to-edge.
+
+Maps for page 0 of each card are initialised immediately; maps for later pages are lazily initialised via `IntersectionObserver` (tracked in `mapObservers[]`) the first time their page scrolls into view, since they're off-screen until the user swipes.
+
 ## Card layout
 
-Each card is a flex column:
+Each `.card-page` is a flex column:
 - **`.card-body`** (flex row, `flex: 1`) — fills available height above the counter row and capacity bar
   - **`.card-content`** (flex column, `flex: 1`) — station name, distance, then `.card-meta` pushed to the bottom with `margin-top: auto`
   - **`.card-map`** (Leaflet map, `flex: 1`) — takes up half the card width, stretches to the full height of `.card-body`; tapping opens Google Maps searching for `Santander Cycles: <name>`
