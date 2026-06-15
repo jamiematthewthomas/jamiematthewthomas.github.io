@@ -1,6 +1,6 @@
 # jamiematthewthomas.github.io
 
-Personal GitHub Pages site. `index.html` is a landing page linking to the projects below.
+Personal GitHub Pages site. `index.html` is a landing page linking to the projects below, each shown as a card with its own icon and accent colour.
 
 ## Projects
 

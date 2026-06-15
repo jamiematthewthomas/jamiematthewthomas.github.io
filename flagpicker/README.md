@@ -16,3 +16,7 @@ A daily, Wordle-style game. Each day shows a flag with one section (a stripe, cr
 No framework, no build step — HTML, CSS, and JS are all inline in `index.html`, with flag and puzzle data in separate `.js` files (loaded via `<script src>` so the page also works over `file://`).
 
 Installable as a PWA (`manifest.json`, `sw.js`, and icon files) for adding to a mobile home screen.
+
+## Look
+
+The app's accent colour is navy (`#0f298e`) — used for the page background, the submit button, and the colour picker's focus state. Text on the navy background (the title, subtitle, and footer) is semi-transparent white; the flag name and other text inside the white cards stays black.

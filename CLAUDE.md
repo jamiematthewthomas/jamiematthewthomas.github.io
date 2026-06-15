@@ -9,6 +9,10 @@ A personal GitHub Pages site hosting a small collection of single-page web apps,
 
 Across all projects: no build step, no package manager, no other framework — each app's HTML, CSS, and JS are inline in its `index.html`, with CDN dependencies where needed.
 
+## Landing page
+
+The root `index.html` lists each app as a `.link-card` — an icon (that app's `icon_with_border.svg`) next to a label, title, and description. Each card carries a `red` or `blue` modifier class matching the app's accent colour (`.link-card.red .link-label` is `#e31837` for Bike and Dock Finder, `.link-card.blue .link-label` is `#0f298e` for Flag Picker), so the cards visually match their respective apps.
+
 # Bike and Dock Finder
 
 ## What this is
@@ -146,5 +150,7 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 - Streak date arithmetic derives "yesterday" from the local `Date` object's fields rather than parsing a stored date string (which `new Date(str)` treats as UTC and can be off by a day in negative-UTC-offset timezones).
 - Installable as a PWA, same approach as Bike and Dock Finder (`manifest.json`, `sw.js`, `icon_with_border.svg`/`icon_without_border.svg`).
 - The footer shows the current streak and a "Written by Jamie Thomas" credit (`#statsText` + `.byline-link`).
-- Page background is a subtle light blue (`#eef4fa`), matched by the PWA manifest's `background_color`.
+- Page background is the app's navy accent (`#0f298e`), matched by the PWA manifest's `background_color`. Text rendered directly on it (`h1`, `.subtitle`, `.stats`, `.byline-link`) uses semi-transparent white rather than the greys used for text inside cards.
+- The navy accent (`#0f298e`) is also used for `button.primary`, the hex input's focus border, the `theme-color` meta tag, and the manifest's `theme_color`. The flag name (`.flag-name`) stays black (`#111`) inside its white card rather than navy, to avoid the page being all one colour.
 - `colorPicker.value` defaults to `#D9D9D9` internally (so the native colour picker has a sensible starting swatch), but this is hidden from the player until they interact — see `hasPicked`/`markPicked()` above.
+- `#flagName` lives inside `#flagCard`, above `#flagSvg`, so it's hidden along with the rest of the picker card once a guess has been made.

@@ -3,8 +3,8 @@
   "short_name": "Flag Picker",
   "start_url": "/flagpicker/",
   "display": "standalone",
-  "background_color": "#eef4fa",
-  "theme_color": "#e31837",
+  "background_color": "#0f298e",
+  "theme_color": "#0f298e",
   "icons": [
     {
       "src": "icon_with_border.svg",
