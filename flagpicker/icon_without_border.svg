@@ -27,14 +27,7 @@
      inkscape:window-x="2551"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg16" /><!-- Map base --><!-- Roads (horizontal: y=114, y=358 / vertical: x=112, x=362) --><!-- Road centre dashes --><!-- City blocks: top row --><!-- City blocks: middle row (left and right only — centre is clear) --><!-- City blocks: bottom row --><!-- White circle centred on the map --><ellipse
-     fill="#ffffff"
-     id="circle15"
-     ry="221.39983"
-     rx="218.68843"
-     cy="256"
-     cx="256"
-     style="display:inline" /><!-- Bike icon (Material Design path, 24×24 viewBox scaled to fit the circle) --><path
+     inkscape:current-layer="svg16" /><!-- Map base --><!-- Roads (horizontal: y=114, y=358 / vertical: x=112, x=362) --><!-- Road centre dashes --><!-- City blocks: top row --><!-- City blocks: middle row (left and right only — centre is clear) --><!-- City blocks: bottom row --><!-- White circle centred on the map --><!-- Bike icon (Material Design path, 24×24 viewBox scaled to fit the circle) --><path
      d="M 42.657692,1.4999994 V 511.90627 H 96.383983 V 270.13471 H 472.47451 L 418.745,135.81895 472.47451,1.4999994 Z M 96.383983,55.226292 H 393.22533 l -32.23386,80.592658 32.23386,80.58945 H 96.383983 Z"
      style="fill:#000000;fill-opacity:1;stroke-width:0.0611117"
      id="path2" /><g

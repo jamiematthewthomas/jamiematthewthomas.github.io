@@ -145,12 +145,12 @@
       color: white;
     }
 
-    .swatch-pair {
+    .flag-pair {
       display: flex;
       gap: 12px;
     }
 
-    .swatch {
+    .flag-col {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -158,11 +158,10 @@
       gap: 6px;
     }
 
-    .swatch-color {
+    .result-flag {
       width: 100%;
-      height: 48px;
+      display: block;
       border-radius: 8px;
-      border: 1px solid rgba(0,0,0,0.1);
     }
 
     .swatch-label {
@@ -237,8 +236,9 @@
 	<p class="subtitle" id="subtitle">Use the colour picker to fill in the flag's missing section</p>
     
     
-    <div class="flag-card">
-	  <h2 class="flag-name hidden" id="flagName"></h2>
+    <h2 class="flag-name hidden" id="flagName"></h2>
+
+    <div class="flag-card" id="flagCard">
       <svg id="flagSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet"></svg>
       <div class="picker-row unset" id="pickerRow">
         <input type="color" id="colorPicker" value="#D9D9D9">
@@ -248,14 +248,14 @@
     </div>
 
     <div class="result hidden" id="result">
-      <div class="swatch-pair">
-        <div class="swatch">
-          <div class="swatch-color" id="guessSwatch"></div>
+      <div class="flag-pair">
+        <div class="flag-col">
+          <svg class="result-flag" id="guessFlagSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet"></svg>
           <div class="swatch-label">Your guess</div>
           <div class="swatch-hex" id="guessHex"></div>
         </div>
-        <div class="swatch">
-          <div class="swatch-color" id="actualSwatch"></div>
+        <div class="flag-col">
+          <svg class="result-flag" id="actualFlagSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet"></svg>
           <div class="swatch-label">Actual</div>
           <div class="swatch-hex" id="actualHex"></div>
         </div>
@@ -288,10 +288,11 @@
     const submitBtn = document.getElementById('submitBtn');
     const subtitle = document.getElementById('subtitle');
     const flagName = document.getElementById('flagName');
+    const flagCard = document.getElementById('flagCard');
     const result = document.getElementById('result');
-    const guessSwatch = document.getElementById('guessSwatch');
+    const guessFlagSvg = document.getElementById('guessFlagSvg');
+    const actualFlagSvg = document.getElementById('actualFlagSvg');
     const guessHex = document.getElementById('guessHex');
-    const actualSwatch = document.getElementById('actualSwatch');
     const actualHex = document.getElementById('actualHex');
     const scoreValue = document.getElementById('scoreValue');
     const scoreFeedback = document.getElementById('scoreFeedback');
@@ -354,6 +355,21 @@
       });
     }
 
+    // Renders the full flag into a result-view <svg>, with the target shape's
+    // fill set to a fixed colour (the player's guess or the actual colour) —
+    // no checkerboard pattern, since the result is shown after the guess.
+    function renderFlagInto(el, fillValue) {
+      const { flag, idx } = current;
+      const target = flag.shapes[idx];
+      const targetHex = cssColorToHex(target.fill);
+      el.innerHTML = flag.svg;
+      el.querySelectorAll('[fill]').forEach(node => {
+        if (cssColorToHex(node.getAttribute('fill')) === targetHex) {
+          node.setAttribute('fill', fillValue);
+        }
+      });
+    }
+
     function normalizeHex(value) {
       let h = value.trim().replace(/^#/, '').toUpperCase();
       if (/^[0-9A-F]{3}$/.test(h)) h = h.split('').map(c => c + c).join('');
@@ -391,11 +407,13 @@
     }
 
     function feedbackForScore(score) {
-      if (score >= 95) return 'Perfect match!';
-      if (score >= 80) return 'Great guess!';
-      if (score >= 60) return 'Good guess';
-      if (score >= 40) return 'Not bad';
-      return 'Way off!';
+      if (score === 100) return 'Perfect score! 🤯';
+      if (score >= 95) return 'Incredible work! 😎';
+      if (score >= 85) return 'Great guess! 👏';
+      if (score >= 75) return 'Good guess 🙂';
+      if (score >= 60) return 'Not great 😬';
+      if (score >= 40) return 'Pretty bad 😞';
+      return 'Way off! 💀';
     }
 
     function loadState() {
@@ -411,9 +429,9 @@
     }
 
     function showResult(guess, actual, score) {
-      guessSwatch.style.background = guess;
+      renderFlagInto(guessFlagSvg, guess);
+      renderFlagInto(actualFlagSvg, actual);
       guessHex.textContent = guess;
-      actualSwatch.style.background = actual;
       actualHex.textContent = actual;
       scoreValue.textContent = score;
       scoreFeedback.textContent = feedbackForScore(score);
@@ -448,10 +466,8 @@
       const newState = { lastDate: todayStr, lastGuess: guess, lastScore: score, streak };
       saveState(newState);
 
-      pickerRow.classList.add('hidden');
-      submitBtn.classList.add('hidden');
+      flagCard.classList.add('hidden');
       subtitle.classList.add('hidden');
-      renderFlag(true);
       showResult(guess, actual, score);
       comeBackText.classList.remove('hidden');
       updateStats(newState);
@@ -484,10 +500,8 @@
       hexInput.value = '';
 
       if (state.lastDate === todayStr) {
-        pickerRow.classList.add('hidden');
-        submitBtn.classList.add('hidden');
+        flagCard.classList.add('hidden');
         subtitle.classList.add('hidden');
-        renderFlag(true);
         showResult(state.lastGuess, cssColorToHex(flag.shapes[idx].fill), state.lastScore);
         comeBackText.classList.remove('hidden');
       } else {

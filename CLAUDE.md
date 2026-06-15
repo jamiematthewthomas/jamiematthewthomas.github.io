@@ -128,11 +128,17 @@ Flag and puzzle data live in `flags.js`/`puzzles.js` as `const FLAGS_DATA = {...
 
 A `hasPicked` flag tracks whether the player has interacted with the colour picker or hex input yet. Until then, `renderFlag()` always shows the checkerboard pattern, regardless of `colorPicker.value`. Any interaction (`input` on either control, or `blur` on the hex input) calls `markPicked()`, which sets `hasPicked = true` and removes the `.unset` class from `#pickerRow` — this class dims the colour swatch via `.picker-row.unset input[type="color"] { opacity: 0.35 }`. The hex input starts empty with `placeholder="Pick a colour"` rather than a value.
 
+## Result view
+
+After a guess (or on revisiting after already playing today), `#flagCard` (the picker card) is hidden and `#result` is shown — a single card so only one is visible at a time. `#result` renders the flag twice via `renderFlagInto(el, fillValue)`, which injects `flag.svg` into the given `<svg>` and sets the target shape's fill directly to `fillValue` (no checkerboard pattern, unlike `renderFlag()`): once into `#guessFlagSvg` with the player's guessed colour, and once into `#actualFlagSvg` with the actual colour, side by side via `.flag-pair`/`.flag-col`.
+
 `cssColorToHex()` normalizes any CSS colour value (named colours like `red`, shorthand hex like `#fc0`, etc.) to `#RRGGBB` via an off-screen probe element + `getComputedStyle`, so fill-matching and scoring work regardless of how a colour is expressed in the source SVG.
 
 ## Scoring
 
 Euclidean RGB distance, converted to a 0–100 score via exponential decay (`scoreFromDistance`): `100 * exp(-5 * (distance/maxDistance)^2)`. This is deliberately more forgiving for close guesses and harsher for distant ones than a linear scale.
+
+`feedbackForScore()` maps the score to a one-line caption with an emoji, shown alongside the score: 100 is "Perfect score! 🤯", 95-99 "Incredible work! 😎", 85-94 "Great guess! 👏", 75-84 "Good guess 🙂", then deliberately harsher below that — 60-74 "Not great 😬", 40-59 "Pretty bad 😞", under 40 "Way off! 💀".
 
 ## Notes
 
