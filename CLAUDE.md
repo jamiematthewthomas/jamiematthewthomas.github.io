@@ -136,7 +136,7 @@ A `hasPicked` flag tracks whether the player has interacted with the colour pick
 
 After a guess (or on revisiting after already playing today), `#flagCard` (the picker card) is hidden and `#result` is shown — a single card so only one is visible at a time. `#result` repeats the flag name in `#flagNameResult` (since `#flagName` is hidden along with `#flagCard`), then renders the flag twice via `renderFlagInto(el, fillValue)`, which injects `flag.svg` into the given `<svg>` and sets the target shape's fill directly to `fillValue` (no checkerboard pattern, unlike `renderFlag()`): once into `#guessFlagSvg` with the player's guessed colour, and once into `#actualFlagSvg` with the actual colour, side by side via `.flag-pair`/`.flag-col`.
 
-The subtitle (`#subtitle`) reads "Use the colour picker to fill in the flag's missing section" before a guess, and is swapped in place to "Come back tomorrow for a new flag" afterwards — it stays visible throughout rather than being hidden.
+`#flagCard` has its own subtitle, `#subtitle`, reading "Use the colour picker to fill in the flag's missing section" — shown above the picker row. `#result` has a separate one, `#subtitleResult`, reading "Come back tomorrow for a new flag" — shown below the score feedback. Both use the `.subtitle` class.
 
 `cssColorToHex()` normalizes any CSS colour value (named colours like `red`, shorthand hex like `#fc0`, etc.) to `#RRGGBB` via an off-screen probe element + `getComputedStyle`, so fill-matching and scoring work regardless of how a colour is expressed in the source SVG.
 
@@ -152,7 +152,7 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 - Streak date arithmetic derives "yesterday" from the local `Date` object's fields rather than parsing a stored date string (which `new Date(str)` treats as UTC and can be off by a day in negative-UTC-offset timezones).
 - Installable as a PWA, same approach as Bike and Dock Finder (`manifest.json`, `sw.js`, `icon_with_border.svg`/`icon_without_border.svg`).
 - The footer shows the current streak and a "Written by Jamie Thomas" credit (`#statsText` + `.byline-link`).
-- Page background is the app's navy accent (`#0f298e`), matched by the PWA manifest's `background_color`. Text rendered directly on it (`h1`, `.subtitle`, `.stats`, `.byline-link`) uses semi-transparent white rather than the greys used for text inside cards.
+- Page background is the app's navy accent (`#0f298e`), matched by the PWA manifest's `background_color`. Text rendered directly on it (`h1`, `.stats`, `.byline-link`) uses semi-transparent white rather than the greys used for text inside cards.
 - The navy accent (`#0f298e`) is also used for `button.primary`, the hex input's focus border, the `theme-color` meta tag, and the manifest's `theme_color`. The flag name (`.flag-name`) stays black (`#111`) inside its white card rather than navy, to avoid the page being all one colour.
 - `colorPicker.value` defaults to `#D9D9D9` internally (so the native colour picker has a sensible starting swatch), but this is hidden from the player until they interact — see `hasPicked`/`markPicked()` above.
 - `#flagName` lives inside `#flagCard`, above `#flagSvg`, so it's hidden along with the rest of the picker card once a guess has been made — `#flagNameResult` (inside `#result`) shows the same name afterwards.

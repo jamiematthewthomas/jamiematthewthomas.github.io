@@ -43,9 +43,8 @@
 
     .subtitle {
       font-size: 13px;
-      color: rgba(255,255,255,0.7);
+      color: #666;
       text-align: center;
-      margin-top: -4px;
     }
 
     .flag-name {
@@ -227,12 +226,11 @@
 <body>
   <div class="app">
     <h1>Flag Picker</h1>
-	<p class="subtitle" id="subtitle">Use the colour picker to fill in the flag's missing section</p>
-    
-    
+
     <div class="flag-card" id="flagCard">
       <h2 class="flag-name hidden" id="flagName"></h2>
       <svg id="flagSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet"></svg>
+      <p class="subtitle" id="subtitle">Use the colour picker to fill in the flag's missing section</p>
       <div class="picker-row unset" id="pickerRow">
         <input type="color" id="colorPicker" value="#D9D9D9">
         <input type="text" class="hex-input" id="hexInput" placeholder="Pick a colour" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" inputmode="text">
@@ -259,6 +257,7 @@
         <span class="score-max">/ 100</span>
       </div>
       <div class="score-feedback" id="scoreFeedback"></div>
+      <p class="subtitle" id="subtitleResult">Come back tomorrow for a new flag</p>
     </div>
 
     <div class="stats">
@@ -279,7 +278,6 @@
     const hexInput = document.getElementById('hexInput');
     const pickerRow = document.getElementById('pickerRow');
     const submitBtn = document.getElementById('submitBtn');
-    const subtitle = document.getElementById('subtitle');
     const flagName = document.getElementById('flagName');
     const flagNameResult = document.getElementById('flagNameResult');
     const flagCard = document.getElementById('flagCard');
@@ -461,7 +459,6 @@
       saveState(newState);
 
       flagCard.classList.add('hidden');
-      subtitle.textContent = 'Come back tomorrow for a new flag';
       showResult(guess, actual, score);
       updateStats(newState);
     }
@@ -494,7 +491,6 @@
 
       if (state.lastDate === todayStr) {
         flagCard.classList.add('hidden');
-        subtitle.textContent = 'Come back tomorrow for a new flag';
         showResult(state.lastGuess, cssColorToHex(flag.shapes[idx].fill), state.lastScore);
       } else {
         renderFlag(false);
