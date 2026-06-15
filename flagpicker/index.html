@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flag Picker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f0f0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    h1 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      color: #888;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin-top: -4px;
+    }
+
+    .flag-name {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      color: #111;
+      margin-top: -8px;
+    }
+
+    .flag-card, .result {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    #flagSvg {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .picker-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    input[type="color"] {
+      width: 56px;
+      height: 56px;
+      border: none;
+      border-radius: 12px;
+      padding: 0;
+      cursor: pointer;
+      background: none;
+      flex-shrink: 0;
+    }
+
+    .hex-input {
+      flex: 1;
+      min-width: 0;
+      height: 56px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 20px;
+      font-weight: 600;
+      color: #111;
+      text-transform: uppercase;
+      text-align: center;
+      letter-spacing: 0.04em;
+      background: #f4f4f5;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 0 12px;
+    }
+
+    .hex-input:focus {
+      outline: none;
+      border-color: #e31837;
+      background: white;
+    }
+
+    button {
+      font-family: inherit;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    button.primary {
+      background: #e31837;
+      color: white;
+    }
+
+    .swatch-pair {
+      display: flex;
+      gap: 12px;
+    }
+
+    .swatch {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatch-color {
+      width: 100%;
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .swatch-label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .swatch-hex {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #111;
+      text-transform: uppercase;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .score-value {
+      font-size: 36px;
+      font-weight: 800;
+    }
+
+    .score-max {
+      font-size: 16px;
+      font-weight: 600;
+      color: #888;
+    }
+
+    .score-feedback {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .reveal-text {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .stats {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Flag Picker</h1>
+    <h2 class="flag-name hidden" id="flagName"></h2>
+    <p class="subtitle" id="subtitle">Pick the colour for today's missing section, then submit your guess</p>
+
+    <div class="flag-card">
+      <svg id="flagSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="picker-row" id="pickerRow">
+        <input type="color" id="colorPicker" value="#808080">
+        <input type="text" class="hex-input" id="hexInput" value="#808080" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" inputmode="text">
+      </div>
+      <button class="primary" id="submitBtn">Submit guess</button>
+    </div>
+
+    <div class="result hidden" id="result">
+      <div class="swatch-pair">
+        <div class="swatch">
+          <div class="swatch-color" id="guessSwatch"></div>
+          <div class="swatch-label">Your guess</div>
+          <div class="swatch-hex" id="guessHex"></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" id="actualSwatch"></div>
+          <div class="swatch-label">Actual</div>
+          <div class="swatch-hex" id="actualHex"></div>
+        </div>
+      </div>
+      <div class="score-row">
+        <span class="score-value" id="scoreValue">0</span>
+        <span class="score-max">/ 100</span>
+      </div>
+      <div class="score-feedback" id="scoreFeedback"></div>
+      <div class="reveal-text" id="comeBackText">Come back tomorrow for a new flag.</div>
+    </div>
+
+    <div class="stats" id="statsText"></div>
+  </div>
+
+  <script src="flags.js"></script>
+  <script src="puzzles.js"></script>
+  <script>
+    const STORAGE_KEY = 'flagpicker-state';
+    const EPOCH = new Date(2026, 5, 15); // 2026-06-15, first curated puzzle
+
+    const svg = document.getElementById('flagSvg');
+    const colorPicker = document.getElementById('colorPicker');
+    const hexInput = document.getElementById('hexInput');
+    const pickerRow = document.getElementById('pickerRow');
+    const submitBtn = document.getElementById('submitBtn');
+    const subtitle = document.getElementById('subtitle');
+    const flagName = document.getElementById('flagName');
+    const result = document.getElementById('result');
+    const guessSwatch = document.getElementById('guessSwatch');
+    const guessHex = document.getElementById('guessHex');
+    const actualSwatch = document.getElementById('actualSwatch');
+    const actualHex = document.getElementById('actualHex');
+    const scoreValue = document.getElementById('scoreValue');
+    const scoreFeedback = document.getElementById('scoreFeedback');
+    const comeBackText = document.getElementById('comeBackText');
+    const statsText = document.getElementById('statsText');
+
+    // Checkerboard pattern used as the placeholder fill for the missing shape,
+    // sized to suit the flags' 640x480 viewBox.
+    const MISSING_PATTERN = `
+      <defs>
+        <pattern id="missing" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#d0d0d0"/>
+          <rect width="32" height="32" fill="#a0a0a0"/>
+          <rect x="32" y="32" width="32" height="32" fill="#a0a0a0"/>
+        </pattern>
+      </defs>`;
+
+    // Off-screen element used to resolve any CSS colour (named colours like "red",
+    // shorthand hex like "#fc0", etc.) to a normalized #RRGGBB via getComputedStyle.
+    const colorProbe = document.createElement('div');
+    colorProbe.style.position = 'absolute';
+    colorProbe.style.visibility = 'hidden';
+    colorProbe.style.pointerEvents = 'none';
+    document.body.appendChild(colorProbe);
+
+    function cssColorToHex(value) {
+      colorProbe.style.color = value;
+      const [r, g, b] = getComputedStyle(colorProbe).color.match(/[\d.]+/g).map(Number);
+      return '#' + [r, g, b].map(n => Math.round(n).toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+
+    let current = null; // { flag, idx }
+
+    function formatDate(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function dayIndexSinceEpoch(d) {
+      const startOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      return Math.floor((startOfDay - EPOCH) / 86400000);
+    }
+
+    // Each flag's shapes have a unique `fill` value within that flag's SVG, so the
+    // target shape can be found by matching fill colour rather than by element
+    // reference. Matching is done on normalized hex so e.g. "red" and "#ff0000"
+    // (or "#fc0" and "#ffcc00") are treated as the same colour.
+    function renderFlag(revealed) {
+      const { flag, idx } = current;
+      const target = flag.shapes[idx];
+      const targetHex = cssColorToHex(target.fill);
+      svg.innerHTML = MISSING_PATTERN + flag.svg;
+      svg.querySelectorAll('[fill]').forEach(el => {
+        if (cssColorToHex(el.getAttribute('fill')) === targetHex) {
+          el.setAttribute('fill', revealed ? target.fill : (colorPicker.value || 'url(#missing)'));
+        }
+      });
+    }
+
+    function normalizeHex(value) {
+      let h = value.trim().replace(/^#/, '').toUpperCase();
+      if (/^[0-9A-F]{3}$/.test(h)) h = h.split('').map(c => c + c).join('');
+      return /^[0-9A-F]{6}$/.test(h) ? '#' + h : null;
+    }
+
+    function setColor(hex) {
+      colorPicker.value = hex;
+      hexInput.value = hex;
+      renderFlag(false);
+    }
+
+    function hexToRgb(hex) {
+      const h = hex.replace('#', '');
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+    }
+
+    function colorDistance(a, b) {
+      const [r1, g1, b1] = hexToRgb(a);
+      const [r2, g2, b2] = hexToRgb(b);
+      return Math.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2);
+    }
+
+    // Exponential decay rather than a linear scale, so guesses close to the actual
+    // colour still score highly while a wildly wrong colour drops off quickly.
+    function scoreFromDistance(d) {
+      const max = Math.sqrt(3 * 255 ** 2);
+      const x = d / max;
+      return Math.round(100 * Math.exp(-5 * x * x));
+    }
+
+    function feedbackForScore(score) {
+      if (score >= 95) return 'Perfect match!';
+      if (score >= 80) return 'Great guess!';
+      if (score >= 60) return 'Good guess';
+      if (score >= 40) return 'Not bad';
+      return 'Way off!';
+    }
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { lastDate: null, streak: 0 };
+      } catch {
+        return { lastDate: null, streak: 0 };
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function showResult(guess, actual, score) {
+      guessSwatch.style.background = guess;
+      guessHex.textContent = guess;
+      actualSwatch.style.background = actual;
+      actualHex.textContent = actual;
+      scoreValue.textContent = score;
+      scoreFeedback.textContent = feedbackForScore(score);
+      result.classList.remove('hidden');
+    }
+
+    function updateStats(state) {
+      const streakLabel = state.streak === 1 ? '1 day' : `${state.streak} days`;
+      statsText.textContent = `Current streak: ${streakLabel}`;
+    }
+
+    function submitGuess() {
+      const state = loadState();
+      const today = new Date();
+      const todayStr = formatDate(today);
+
+      const guess = (normalizeHex(hexInput.value) || colorPicker.value).toUpperCase();
+      const actual = cssColorToHex(current.flag.shapes[current.idx].fill);
+      const score = scoreFromDistance(colorDistance(guess, actual));
+
+      let streak;
+      if (state.lastDate) {
+        // Derive "yesterday" from the local Date object's fields rather than
+        // parsing state.lastDate as a string, which `new Date(str)` treats as UTC
+        // and can shift by a day in negative-UTC-offset timezones.
+        const prevDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+        streak = state.lastDate === formatDate(prevDay) ? state.streak + 1 : 1;
+      } else {
+        streak = 1;
+      }
+
+      const newState = { lastDate: todayStr, lastGuess: guess, lastScore: score, streak };
+      saveState(newState);
+
+      pickerRow.classList.add('hidden');
+      submitBtn.classList.add('hidden');
+      subtitle.classList.add('hidden');
+      renderFlag(true);
+      showResult(guess, actual, score);
+      comeBackText.classList.remove('hidden');
+      updateStats(newState);
+    }
+
+    function init() {
+      const flags = FLAGS_DATA;
+      const puzzles = PUZZLES_DATA;
+
+      const today = new Date();
+      const todayStr = formatDate(today);
+      let puzzle = puzzles.find(p => p.date === todayStr);
+      if (!puzzle) {
+        // No curated puzzle for today (we've run out of dated entries) — fall back
+        // to cycling through the list based on days elapsed since EPOCH. The
+        // double modulo keeps the index positive for dates before EPOCH.
+        const dayIndex = dayIndexSinceEpoch(today);
+        puzzle = puzzles[((dayIndex % puzzles.length) + puzzles.length) % puzzles.length];
+      }
+
+      const flag = { name: puzzle.flag, ...flags[puzzle.flag] };
+      const idx = flag.shapes.findIndex(s => s.id === puzzle.shapeId);
+      current = { flag, idx };
+
+      flagName.textContent = flag.name;
+      flagName.classList.remove('hidden');
+
+      const state = loadState();
+      setColor('#808080');
+
+      if (state.lastDate === todayStr) {
+        pickerRow.classList.add('hidden');
+        submitBtn.classList.add('hidden');
+        subtitle.classList.add('hidden');
+        renderFlag(true);
+        showResult(state.lastGuess, cssColorToHex(flag.shapes[idx].fill), state.lastScore);
+        comeBackText.classList.remove('hidden');
+      } else {
+        renderFlag(false);
+      }
+
+      updateStats(state);
+    }
+
+    colorPicker.addEventListener('input', () => {
+      hexInput.value = colorPicker.value.toUpperCase();
+      renderFlag(false);
+    });
+
+    hexInput.addEventListener('input', () => {
+      const normalized = normalizeHex(hexInput.value);
+      if (normalized) {
+        colorPicker.value = normalized;
+        renderFlag(false);
+      }
+    });
+
+    hexInput.addEventListener('blur', () => {
+      setColor(normalizeHex(hexInput.value) || colorPicker.value.toUpperCase());
+    });
+
+    hexInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') hexInput.blur();
+    });
+
+    submitBtn.addEventListener('click', submitGuess);
+
+    init();
+  </script>
+</body>
+</html>

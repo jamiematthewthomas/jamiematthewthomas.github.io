@@ -1,12 +1,23 @@
-# Bike and Dock Finder — project notes for Claude
+# jamiematthewthomas.github.io — project notes for Claude
 
 ## What this is
 
-A single-file web app ("Bike and Dock Finder") that shows the nearest Santander Cycles docking stations to the user's current location. Hosted on GitHub Pages at the repo root.
+A personal GitHub Pages site hosting a small collection of single-page web apps, with a landing page at the repo root in `index.html`. See the root `README.md` for a project index. Each project lives in its own folder with its own `README.md`:
+
+- **`santandercycles/`** — Bike and Dock Finder, covered below.
+- **`flagpicker/`** — Flag Picker, covered below.
+
+Across all projects: no build step, no package manager, no other framework — each app's HTML, CSS, and JS are inline in its `index.html`, with CDN dependencies where needed.
+
+# Bike and Dock Finder
+
+## What this is
+
+A single-file web app ("Bike and Dock Finder") that shows the nearest Santander Cycles docking stations to the user's current location.
 
 ## Architecture
 
-The Santander Cycles app lives in `santandercycles/index.html` — HTML, CSS, and JS are all inline. Leaflet and Material Symbols Outlined are loaded from CDN. There is no build step, no package manager, and no other framework. Related files (`manifest.json`, `sw.js`, `icon.svg`) sit alongside it in the same folder. The landing page is at the repo root in `index.html`.
+The Santander Cycles app lives in `santandercycles/index.html` — HTML, CSS, and JS are all inline. Leaflet and Material Symbols Outlined are loaded from CDN. Related files (`manifest.json`, `sw.js`, `icon.svg`) sit alongside it in the same folder.
 
 ## Key APIs
 
@@ -97,3 +108,31 @@ Three segments — red (standard bikes), green (e-bikes), blue (empty spaces) �
 ## Distance calculation
 
 Haversine formula, result in metres. Formatted as `Xm away` under 1 km, `X.Xkm away` above.
+
+# Flag Picker
+
+## What this is
+
+A daily, Wordle-style game (`flagpicker/index.html`) showing a flag with one shape (a stripe, cross, circle, etc.) missing. The player picks a colour and is scored 0–100 on how close it is to the actual colour. One play per day, with a localStorage-backed streak (`STORAGE_KEY = 'flagpicker-state'`, no cookies).
+
+## Data files
+
+Flag and puzzle data live in `flags.js`/`puzzles.js` as `const FLAGS_DATA = {...}` / `const PUZZLES_DATA = [...]`, loaded via `<script src>` rather than `fetch()` — `fetch()` of local files is blocked under `file://`, which this avoids so the page also works without a server.
+
+- **`puzzles.js`** — date-keyed list (`{date, flag, shapeId}`). If there's no entry for today, `dayIndexSinceEpoch()` picks a puzzle by cycling through the list based on days since `EPOCH` (2026-06-15, the first curated puzzle).
+- **`flags.js`** — per flag, `svg` (raw markup from [flag-icons](https://github.com/lipis/flag-icons) 4x3 SVGs, vendored as inline strings) plus `shapes: [{id, fill}]`. Each shape's `fill` must be unique within that flag's SVG, since rendering finds the hidden shape by matching `fill` attributes rather than by element reference.
+
+## Rendering
+
+`renderFlag()` injects `MISSING_PATTERN` (a checkerboard `<pattern>` def, sized for the flags' `0 0 640 480` viewBox) plus the flag's `svg` markup into `#flagSvg`, then walks `[fill]` elements and replaces the one matching the target shape's fill with either the checkerboard pattern, the player's live colour pick, or (once revealed) the actual fill.
+
+`cssColorToHex()` normalizes any CSS colour value (named colours like `red`, shorthand hex like `#fc0`, etc.) to `#RRGGBB` via an off-screen probe element + `getComputedStyle`, so fill-matching and scoring work regardless of how a colour is expressed in the source SVG.
+
+## Scoring
+
+Euclidean RGB distance, converted to a 0–100 score via exponential decay (`scoreFromDistance`): `100 * exp(-5 * (distance/maxDistance)^2)`. This is deliberately more forgiving for close guesses and harsher for distant ones than a linear scale.
+
+## Notes
+
+- No dark mode.
+- Streak date arithmetic derives "yesterday" from the local `Date` object's fields rather than parsing a stored date string (which `new Date(str)` treats as UTC and can be off by a day in negative-UTC-offset timezones).
