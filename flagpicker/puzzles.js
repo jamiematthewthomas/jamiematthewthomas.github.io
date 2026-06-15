@@ -1,26 +1,5 @@
 const PUZZLES_DATA = [
-  { "date": "2026-06-15", "flag": "Switzerland", "shapeId": "cross" },
-  { "date": "2026-06-16", "flag": "Germany", "shapeId": "mid" },
-  { "date": "2026-06-17", "flag": "Italy", "shapeId": "right" },
-  { "date": "2026-06-18", "flag": "Belgium", "shapeId": "left" },
-  { "date": "2026-06-19", "flag": "Netherlands", "shapeId": "bottom" },
-  { "date": "2026-06-20", "flag": "Ireland", "shapeId": "mid" },
-  { "date": "2026-06-21", "flag": "Mali", "shapeId": "right" },
-  { "date": "2026-06-22", "flag": "Romania", "shapeId": "left" },
-  { "date": "2026-06-23", "flag": "Chad", "shapeId": "mid" },
-  { "date": "2026-06-24", "flag": "Austria", "shapeId": "red" },
-  { "date": "2026-06-25", "flag": "Poland", "shapeId": "top" },
-  { "date": "2026-06-26", "flag": "Monaco", "shapeId": "bottom" },
-  { "date": "2026-06-27", "flag": "Indonesia", "shapeId": "top" },
-  { "date": "2026-06-28", "flag": "Japan", "shapeId": "circle" },
-  { "date": "2026-06-29", "flag": "Bangladesh", "shapeId": "circle" },
-  { "date": "2026-06-30", "flag": "Palau", "shapeId": "circle" },
-  { "date": "2026-07-01", "flag": "Switzerland", "shapeId": "cross" },
-  { "date": "2026-07-02", "flag": "Denmark", "shapeId": "cross" },
-  { "date": "2026-07-03", "flag": "Sweden", "shapeId": "cross" },
-  { "date": "2026-07-04", "flag": "Finland", "shapeId": "cross" },
-  { "date": "2026-07-05", "flag": "Colombia", "shapeId": "mid" },
-  { "date": "2026-07-06", "flag": "Lithuania", "shapeId": "top" },
-  { "date": "2026-07-07", "flag": "Gabon", "shapeId": "bottom" }
+  { "date": "2026-06-15", "flag": "Lithuania", "shapeId": "mid" },
+  { "date": "2026-06-16", "flag": "Germany", "shapeId": "mid" }
 ]
 ;
