@@ -1,0 +1,16 @@
+{
+  "name": "Flag Picker",
+  "short_name": "Flag Picker",
+  "start_url": "/flagpicker/",
+  "display": "standalone",
+  "background_color": "#f0f0f0",
+  "theme_color": "#e31837",
+  "icons": [
+    {
+      "src": "icon_with_border.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

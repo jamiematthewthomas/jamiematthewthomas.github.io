@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flag Picker</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon_without_border.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#e31837">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Flag Picker">
+  <link rel="apple-touch-icon" href="icon_with_border.svg">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -191,9 +198,19 @@
     }
 
     .stats {
-      text-align: center;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       font-size: 12px;
       color: #888;
+    }
+
+    .byline-link {
+      color: #888;
+      font-size: 12px;
+      text-decoration: underline;
     }
 
     .hidden {
@@ -238,7 +255,11 @@
       <div class="reveal-text" id="comeBackText">Come back tomorrow for a new flag.</div>
     </div>
 
-    <div class="stats" id="statsText"></div>
+    <div class="stats">
+      <span id="statsText"></span>
+      <span aria-hidden="true">·</span>
+      <span>Written by <a href="https://jamiethomas.dev" target="_blank" rel="noopener" class="byline-link">Jamie Thomas</a></span>
+    </div>
   </div>
 
   <script src="flags.js"></script>
@@ -480,6 +501,10 @@
     submitBtn.addEventListener('click', submitGuess);
 
     init();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
   </script>
 </body>
 </html>
