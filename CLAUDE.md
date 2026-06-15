@@ -126,6 +126,8 @@ Flag and puzzle data live in `flags.js`/`puzzles.js` as `const FLAGS_DATA = {...
 
 `renderFlag()` injects `MISSING_PATTERN` (a checkerboard `<pattern>` def, sized for the flags' `0 0 640 480` viewBox) plus the flag's `svg` markup into `#flagSvg`, then walks `[fill]` elements and replaces the one matching the target shape's fill with either the checkerboard pattern, the player's live colour pick, or (once revealed) the actual fill.
 
+A `hasPicked` flag tracks whether the player has interacted with the colour picker or hex input yet. Until then, `renderFlag()` always shows the checkerboard pattern, regardless of `colorPicker.value`. Any interaction (`input` on either control, or `blur` on the hex input) calls `markPicked()`, which sets `hasPicked = true` and removes the `.unset` class from `#pickerRow` — this class dims the colour swatch via `.picker-row.unset input[type="color"] { opacity: 0.35 }`. The hex input starts empty with `placeholder="Pick a colour"` rather than a value.
+
 `cssColorToHex()` normalizes any CSS colour value (named colours like `red`, shorthand hex like `#fc0`, etc.) to `#RRGGBB` via an off-screen probe element + `getComputedStyle`, so fill-matching and scoring work regardless of how a colour is expressed in the source SVG.
 
 ## Scoring
@@ -139,4 +141,4 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 - Installable as a PWA, same approach as Bike and Dock Finder (`manifest.json`, `sw.js`, `icon_with_border.svg`/`icon_without_border.svg`).
 - The footer shows the current streak and a "Written by Jamie Thomas" credit (`#statsText` + `.byline-link`).
 - Page background is a subtle light blue (`#eef4fa`), matched by the PWA manifest's `background_color`.
-- The colour picker and hex input start on a light grey (`#D9D9D9`) — light enough to read as a neutral starting point rather than a guess, distinct from the checkerboard "missing" pattern shown before a colour is picked.
+- `colorPicker.value` defaults to `#D9D9D9` internally (so the native colour picker has a sensible starting swatch), but this is hidden from the player until they interact — see `hasPicked`/`markPicked()` above.
