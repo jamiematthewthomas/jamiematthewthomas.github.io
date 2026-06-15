@@ -138,3 +138,5 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 - Streak date arithmetic derives "yesterday" from the local `Date` object's fields rather than parsing a stored date string (which `new Date(str)` treats as UTC and can be off by a day in negative-UTC-offset timezones).
 - Installable as a PWA, same approach as Bike and Dock Finder (`manifest.json`, `sw.js`, `icon_with_border.svg`/`icon_without_border.svg`).
 - The footer shows the current streak and a "Written by Jamie Thomas" credit (`#statsText` + `.byline-link`).
+- Page background is a subtle light blue (`#eef4fa`), matched by the PWA manifest's `background_color`.
+- The colour picker and hex input start on a light grey (`#D9D9D9`) — light enough to read as a neutral starting point rather than a guess, distinct from the checkerboard "missing" pattern shown before a colour is picked.
