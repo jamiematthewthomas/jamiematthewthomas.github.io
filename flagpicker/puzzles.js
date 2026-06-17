@@ -1,6 +1,7 @@
 const PUZZLES_DATA = [
   { "date": "2026-06-15", "flag": "Lithuania", "shapeId": "mid" },
   { "date": "2026-06-16", "flag": "Bangladesh", "shapeId": "circle" },
-  { "date": "2026-06-17", "flag": "Colombia", "shapeId": "mid" }
+  { "date": "2026-06-17", "flag": "Colombia", "shapeId": "mid" },
+  { "date": "2026-06-18", "flag": "Denmark", "shapeId": "bg" }
 ]
 ;
