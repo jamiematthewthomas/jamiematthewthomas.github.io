@@ -121,7 +121,7 @@ A `.info-btn` (the `info` Material Symbol, 22px) sits absolutely positioned to t
 
 ## What this is
 
-A daily, Wordle-style game (`flagfill/index.html`) showing a flag with one shape (a stripe, cross, circle, etc.) missing. The player picks a colour and is scored 0–100 on how close it is to the actual colour. One play per day, with a localStorage-backed streak (`STORAGE_KEY = 'flagfill-state'`, no cookies).
+A daily, Wordle-style game (`flagfill/index.html`) showing a flag with one shape (a stripe, cross, circle, etc.) missing. The player picks a colour and is scored 0–100 on how close it is to the actual colour. One play per day, with a localStorage-backed streak (`STORAGE_KEY = 'flagpicker-state'`, no cookies).
 
 ## Data files
 
