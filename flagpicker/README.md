@@ -6,7 +6,7 @@ A daily, Wordle-style game. Each day shows a flag with one section (a stripe, cr
 
 - `puzzles.js` (`PUZZLES_DATA`) is a date-keyed list of puzzles, each naming a flag and which of its shapes is hidden for that day. If there's no entry for today's date, the day's puzzle is chosen by cycling through the list based on days elapsed since the epoch.
 - `flags.js` (`FLAGS_DATA`) holds the raw SVG markup for each flag (sourced from [flag-icons](https://github.com/lipis/flag-icons), vendored locally) plus a list of its shapes, each identified by its `fill` colour.
-- To render a flag, the hidden shape's elements are found by matching their `fill` attribute and replaced with a checkerboard "missing" pattern, shown until the player picks a colour (via the colour picker or hex input), after which it tracks their live colour pick.
+- To render a flag, the hidden shape's elements are found by matching their `fill` attribute and replaced with a checkerboard "missing" pattern, shown until the player picks a colour with the colour picker, after which it tracks their live colour pick.
 - After submitting, the picker card is replaced by a single result card showing the flag's name, then the whole flag twice side by side — once with your guessed colour and once with the actual colour — along with your score and a "Come back tomorrow for a new flag" note.
 - Your guess is scored 0–100 based on the Euclidean distance between your guess and the actual colour in RGB space, using exponential decay so close guesses score highly and wildly wrong guesses drop off quickly. A one-line caption with an emoji reacts to the score, getting harsher the further off you are.
 - Results and streaks are stored in `localStorage` (no cookies) — one play per day, with the streak continuing only if you played the previous day too. The current streak is shown in the footer alongside a "Written by Jamie Thomas" credit.
@@ -19,4 +19,4 @@ Installable as a PWA (`manifest.json`, `sw.js`, and icon files) for adding to a 
 
 ## Look
 
-The app's accent colour is navy (`#0f298e`) — used for the page background, the submit button, and the colour picker's focus state. Text on the navy background (the title and footer) is semi-transparent white; the flag name, subtitles, and other text inside the white cards stays black or grey.
+The app's accent colour is navy (`#0f298e`) — used for the page background and the submit button. Text on the navy background (the title and footer) is semi-transparent white; the flag name, subtitles, and other text inside the white cards stays black or grey.

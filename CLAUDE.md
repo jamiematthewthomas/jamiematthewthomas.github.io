@@ -130,13 +130,13 @@ Flag and puzzle data live in `flags.js`/`puzzles.js` as `const FLAGS_DATA = {...
 
 `renderFlag()` injects `MISSING_PATTERN` (a checkerboard `<pattern>` def, sized for the flags' `0 0 640 480` viewBox) plus the flag's `svg` markup into `#flagSvg`, then walks `[fill]` elements and replaces the one matching the target shape's fill with either the checkerboard pattern, the player's live colour pick, or (once revealed) the actual fill.
 
-A `hasPicked` flag tracks whether the player has interacted with the colour picker or hex input yet. Until then, `renderFlag()` always shows the checkerboard pattern, regardless of `colorPicker.value`. Any interaction (`input` on either control, or `blur` on the hex input) calls `markPicked()`, which sets `hasPicked = true` and removes the `.unset` class from `#pickerRow` — this class dims the colour swatch via `.picker-row.unset input[type="color"] { opacity: 0.35 }`. The hex input starts empty with `placeholder="Pick a colour"` rather than a value.
+A `hasPicked` flag tracks whether the player has interacted with the colour picker yet. Until then, `renderFlag()` always shows the checkerboard pattern, regardless of `colorPicker.value`. The `input` event on the colour picker calls `markPicked()`, which sets `hasPicked = true` and removes the `.unset` class from `#pickerRow`. When `.unset`, the native `input[type="color"]` is `opacity: 0` (invisible but still fully clickable) and a `colors` Material Symbol is overlaid via `.color-picker-icon` inside `.color-picker-wrap`; the wrapper is styled to match the hex input (light blue background, border). Once a colour is picked the icon hides and the native colour picker swatch shows normally. The hex input is read-only with `placeholder="← Use the colour picker"` and is updated via JS to reflect the chosen hex.
 
 ## Result view
 
 After a guess (or on revisiting after already playing today), `#flagCard` (the picker card) is hidden and `#result` is shown — a single card so only one is visible at a time. `#result` repeats the flag name in `#flagNameResult` (since `#flagName` is hidden along with `#flagCard`), then renders the flag twice via `renderFlagInto(el, fillValue)`, which injects `flag.svg` into the given `<svg>` and sets the target shape's fill directly to `fillValue` (no checkerboard pattern, unlike `renderFlag()`): once into `#guessFlagSvg` with the player's guessed colour, and once into `#actualFlagSvg` with the actual colour, side by side via `.flag-pair`/`.flag-col`.
 
-`#flagCard` has its own subtitle, `#subtitle`, reading "Use the colour picker to fill in the flag's missing section" — shown above the picker row. `#result` has a separate one, `#subtitleResult`, reading "Come back tomorrow for a new flag" — shown below the score feedback. Both use the `.subtitle` class.
+`#flagCard` has its own subtitle, `#subtitle`, reading "Fill in the flag's missing section" — shown above the picker row. `#result` has a separate one, `#subtitleResult`, reading "Come back tomorrow for a new flag" — shown below the score feedback. Both use the `.subtitle` class.
 
 `cssColorToHex()` normalizes any CSS colour value (named colours like `red`, shorthand hex like `#fc0`, etc.) to `#RRGGBB` via an off-screen probe element + `getComputedStyle`, so fill-matching and scoring work regardless of how a colour is expressed in the source SVG.
 
@@ -146,6 +146,12 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 
 `feedbackForScore()` maps the score to a one-line caption with an emoji, shown alongside the score: 100 is "Perfect score! 🤯", 95-99 "Incredible work! 😎", 85-94 "Great guess! 👏", 75-84 "Good guess 🙂", then deliberately harsher below that — 60-74 "Not great 😬", 40-59 "Pretty bad 😞", under 40 "Way off! 💀".
 
+## Icons
+
+Material Symbols Outlined loaded from Google Fonts (`fonts.googleapis.com/css2?family=Material+Symbols+Outlined`), with `display=block` (not `display=swap`) to avoid a flash of the icon name as text before the font loads. A `preconnect` hint to `fonts.gstatic.com` is included so the font file connection is established early. Used for the `colors` icon shown inside `.color-picker-wrap` while the picker is in its unset state.
+
+Font variation settings pinned to `opsz=20, wght=400, FILL=0, GRAD=0`.
+
 ## Notes
 
 - No dark mode.
@@ -153,6 +159,6 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 - Installable as a PWA, same approach as Bike and Dock Finder (`manifest.json`, `sw.js`, `icon_with_border.svg`/`icon_without_border.svg`).
 - The footer shows the current streak and a "Written by Jamie Thomas" credit (`#statsText` + `.byline-link`).
 - Page background is the app's navy accent (`#0f298e`), matched by the PWA manifest's `background_color`. Text rendered directly on it (`h1`, `.stats`, `.byline-link`) uses semi-transparent white rather than the greys used for text inside cards.
-- The navy accent (`#0f298e`) is also used for `button.primary`, the hex input's focus border, the `theme-color` meta tag, and the manifest's `theme_color`. The flag name (`.flag-name`) stays black (`#111`) inside its white card rather than navy, to avoid the page being all one colour.
+- The navy accent (`#0f298e`) is also used for `button.primary`, the `theme-color` meta tag, and the manifest's `theme_color`. The flag name (`.flag-name`) stays black (`#111`) inside its white card rather than navy, to avoid the page being all one colour.
 - `colorPicker.value` defaults to `#D9D9D9` internally (so the native colour picker has a sensible starting swatch), but this is hidden from the player until they interact — see `hasPicked`/`markPicked()` above.
 - `#flagName` lives inside `#flagCard`, above `#flagSvg`, so it's hidden along with the rest of the picker card once a guess has been made — `#flagNameResult` (inside `#result`) shows the same name afterwards.
