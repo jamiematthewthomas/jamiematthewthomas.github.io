@@ -4,20 +4,20 @@
 
 A personal GitHub Pages site hosting a small collection of single-page web apps, with a landing page at the repo root in `index.html`. See the root `README.md` for a project index. Each project lives in its own folder with its own `README.md`:
 
-- **`santandercycles/`** — Bike and Dock Finder, covered below.
+- **`santandercycles/`** — Bike/Dock Finder, covered below.
 - **`flagpicker/`** — Flag Picker, covered below.
 
 Across all projects: no build step, no package manager, no other framework — each app's HTML, CSS, and JS are inline in its `index.html`, with CDN dependencies where needed.
 
 ## Landing page
 
-The root `index.html` lists each app as a `.link-card` — an icon (that app's `icon_with_border.svg`) next to a label, title, and description. Each card carries a `red` or `blue` modifier class matching the app's accent colour (`.link-card.red .link-label` is `#e31837` for Bike and Dock Finder, `.link-card.blue .link-label` is `#0f298e` for Flag Picker), so the cards visually match their respective apps.
+The root `index.html` lists each app as a `.link-card` — an icon (that app's `icon_with_border.svg`) next to a label, title, and description. Each card carries a `red` or `blue` modifier class matching the app's accent colour (`.link-card.red .link-label` is `#e31837` for Bike/Dock Finder, `.link-card.blue .link-label` is `#0f298e` for Flag Picker), so the cards visually match their respective apps.
 
-# Bike and Dock Finder
+# Bike/Dock Finder
 
 ## What this is
 
-A single-file web app ("Bike and Dock Finder") that shows the nearest Santander Cycles docking stations to the user's current location.
+A single-file web app ("Bike/Dock Finder") that shows the nearest Santander Cycles docking stations to the user's current location.
 
 ## Architecture
 
@@ -158,13 +158,13 @@ Font variation settings pinned to `opsz=20, wght=400, FILL=0, GRAD=0`.
 
 ## Info modal
 
-Same pattern as Bike and Dock Finder (see above): `.page-header` wraps the `h1` with an absolutely positioned `.info-btn` (`info` icon, 22px) on the right. Opening `#infoModal` shows a white `.info-sheet` with a `cancel` close button (`.info-close`). Tapping the backdrop also closes it. No dark mode, so the sheet is always white rather than using CSS variables.
+Same pattern as Bike/Dock Finder (see above): `.page-header` wraps the `h1` with an absolutely positioned `.info-btn` (`info` icon, 22px) on the right. Opening `#infoModal` shows a white `.info-sheet` with a `cancel` close button (`.info-close`). Tapping the backdrop also closes it. No dark mode, so the sheet is always white rather than using CSS variables.
 
 ## Notes
 
 - No dark mode.
 - Streak date arithmetic derives "yesterday" from the local `Date` object's fields rather than parsing a stored date string (which `new Date(str)` treats as UTC and can be off by a day in negative-UTC-offset timezones).
-- Installable as a PWA, same approach as Bike and Dock Finder (`manifest.json`, `sw.js`, `icon_with_border.svg`/`icon_without_border.svg`).
+- Installable as a PWA, same approach as Bike/Dock Finder (`manifest.json`, `sw.js`, `icon_with_border.svg`/`icon_without_border.svg`).
 - The footer shows the current streak and a "Written by Jamie Thomas" credit (`#statsText` + `.byline-link`).
 - Page background is the app's navy accent (`#0f298e`), matched by the PWA manifest's `background_color`. Text rendered directly on it (`h1`, `.stats`, `.byline-link`) uses semi-transparent white rather than the greys used for text inside cards.
 - The navy accent (`#0f298e`) is also used for `button.primary`, the `theme-color` meta tag, and the manifest's `theme_color`. The flag name (`.flag-name`) stays black (`#111`) inside its white card rather than navy, to avoid the page being all one colour.

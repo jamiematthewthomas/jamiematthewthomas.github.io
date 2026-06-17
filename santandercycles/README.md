@@ -1,4 +1,4 @@
-# Bike and Dock Finder (`santandercycles/`)
+# Bike/Dock Finder (`santandercycles/`)
 
 A minimal web app that shows you the nearest Santander Cycles docking stations based on your current location.
 
