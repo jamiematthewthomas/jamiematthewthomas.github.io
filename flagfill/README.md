@@ -1,4 +1,4 @@
-# Flag Picker (`flagpicker/`)
+# Flag Fill (`flagfill/`)
 
 A daily, Wordle-style game. Each day shows a flag with one section (a stripe, cross, circle, etc.) missing — you pick a colour with a colour picker and submit a guess for what that section should be.
 

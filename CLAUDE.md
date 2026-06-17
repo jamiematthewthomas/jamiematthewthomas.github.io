@@ -5,13 +5,13 @@
 A personal GitHub Pages site hosting a small collection of single-page web apps, with a landing page at the repo root in `index.html`. See the root `README.md` for a project index. Each project lives in its own folder with its own `README.md`:
 
 - **`santandercycles/`** — Bike/Dock Finder, covered below.
-- **`flagpicker/`** — Flag Picker, covered below.
+- **`flagfill/`** — Flag Fill, covered below.
 
 Across all projects: no build step, no package manager, no other framework — each app's HTML, CSS, and JS are inline in its `index.html`, with CDN dependencies where needed.
 
 ## Landing page
 
-The root `index.html` lists each app as a `.link-card` — an icon (that app's `icon_with_border.svg`) next to a label, title, and description. Each card carries a `red` or `blue` modifier class matching the app's accent colour (`.link-card.red .link-label` is `#e31837` for Bike/Dock Finder, `.link-card.blue .link-label` is `#0f298e` for Flag Picker), so the cards visually match their respective apps.
+The root `index.html` lists each app as a `.link-card` — an icon (that app's `icon_with_border.svg`) next to a label, title, and description. Each card carries a `red` or `blue` modifier class matching the app's accent colour (`.link-card.red .link-label` is `#e31837` for Bike/Dock Finder, `.link-card.blue .link-label` is `#0f298e` for Flag Fill), so the cards visually match their respective apps.
 
 # Bike/Dock Finder
 
@@ -117,11 +117,11 @@ Haversine formula, result in metres. Formatted as `Xm away` under 1 km, `X.Xkm a
 
 A `.info-btn` (the `info` Material Symbol, 22px) sits absolutely positioned to the right inside `.page-header`, which wraps the `h1` and uses `justify-content: center` to keep the title centred. Tapping the button removes `.hidden` from `#infoModal` — a `position: fixed; inset: 0` overlay with a semi-transparent black backdrop. The inner `.info-sheet` uses `var(--card-bg)` and `var(--card-shadow)` so it adapts to dark mode. A `cancel` icon button (`.info-close`) in the top-right of the sheet closes it; tapping the backdrop also closes it (`handleModalClick` checks `e.target === infoModal`).
 
-# Flag Picker
+# Flag Fill
 
 ## What this is
 
-A daily, Wordle-style game (`flagpicker/index.html`) showing a flag with one shape (a stripe, cross, circle, etc.) missing. The player picks a colour and is scored 0–100 on how close it is to the actual colour. One play per day, with a localStorage-backed streak (`STORAGE_KEY = 'flagpicker-state'`, no cookies).
+A daily, Wordle-style game (`flagfill/index.html`) showing a flag with one shape (a stripe, cross, circle, etc.) missing. The player picks a colour and is scored 0–100 on how close it is to the actual colour. One play per day, with a localStorage-backed streak (`STORAGE_KEY = 'flagfill-state'`, no cookies).
 
 ## Data files
 

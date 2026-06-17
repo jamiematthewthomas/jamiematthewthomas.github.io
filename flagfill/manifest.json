@@ -1,7 +1,7 @@
 {
-  "name": "Flag Picker",
-  "short_name": "Flag Picker",
-  "start_url": "/flagpicker/",
+  "name": "Flag Fill",
+  "short_name": "Flag Fill",
+  "start_url": "/flagfill/",
   "display": "standalone",
   "background_color": "#0f298e",
   "theme_color": "#0f298e",
