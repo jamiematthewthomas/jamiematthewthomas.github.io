@@ -113,6 +113,10 @@ Three segments — red (standard bikes), green (e-bikes), blue (empty spaces) �
 
 Haversine formula, result in metres. Formatted as `Xm away` under 1 km, `X.Xkm away` above.
 
+## Info modal
+
+A `.info-btn` (the `info` Material Symbol, 22px) sits absolutely positioned to the right inside `.page-header`, which wraps the `h1` and uses `justify-content: center` to keep the title centred. Tapping the button removes `.hidden` from `#infoModal` — a `position: fixed; inset: 0` overlay with a semi-transparent black backdrop. The inner `.info-sheet` uses `var(--card-bg)` and `var(--card-shadow)` so it adapts to dark mode. A `cancel` icon button (`.info-close`) in the top-right of the sheet closes it; tapping the backdrop also closes it (`handleModalClick` checks `e.target === infoModal`).
+
 # Flag Picker
 
 ## What this is
@@ -148,9 +152,13 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 
 ## Icons
 
-Material Symbols Outlined loaded from Google Fonts (`fonts.googleapis.com/css2?family=Material+Symbols+Outlined`), with `display=block` (not `display=swap`) to avoid a flash of the icon name as text before the font loads. A `preconnect` hint to `fonts.gstatic.com` is included so the font file connection is established early. Used for the `colors` icon shown inside `.color-picker-wrap` while the picker is in its unset state.
+Material Symbols Outlined loaded from Google Fonts (`fonts.googleapis.com/css2?family=Material+Symbols+Outlined`), with `display=block` (not `display=swap`) to avoid a flash of the icon name as text before the font loads. A `preconnect` hint to `fonts.gstatic.com` is included so the font file connection is established early. Used for the `colors` icon shown inside `.color-picker-wrap` while the picker is in its unset state, and the `info` / `cancel` icons for the info modal.
 
 Font variation settings pinned to `opsz=20, wght=400, FILL=0, GRAD=0`.
+
+## Info modal
+
+Same pattern as Bike and Dock Finder (see above): `.page-header` wraps the `h1` with an absolutely positioned `.info-btn` (`info` icon, 22px) on the right. Opening `#infoModal` shows a white `.info-sheet` with a `cancel` close button (`.info-close`). Tapping the backdrop also closes it. No dark mode, so the sheet is always white rather than using CSS variables.
 
 ## Notes
 

@@ -34,3 +34,4 @@ No framework, no build step — HTML, CSS, and JS are all inline in `index.html`
 - Safe area insets for iPhone notch / Dynamic Island / home indicator
 - Tap feedback on cards
 - Swipeable cards, edge-to-edge with a peek of the adjacent page
+- Info button (top right of the title bar) opens a modal explaining what the app does

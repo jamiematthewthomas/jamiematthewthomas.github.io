@@ -75,7 +75,83 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-on-bg);
+    }
+
+    .page-header {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 12px;
+    }
+
+    .info-btn {
+      position: absolute;
+      right: 0;
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: var(--text-on-bg);
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .info-btn .material-symbols-outlined,
+    .info-close .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    .info-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 24px;
+    }
+
+    .info-modal.hidden { display: none; }
+
+    .info-sheet {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 480px;
+      width: 100%;
+      position: relative;
+      box-shadow: var(--card-shadow);
+    }
+
+    .info-sheet h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      padding-right: 28px;
+    }
+
+    .info-sheet p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .info-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text-muted);
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* #root grows to fill the remaining vertical space after the h1. When showing
@@ -319,7 +395,23 @@
   </style>
 </head>
 <body>
-  <h1>Santander Cycles - Bike and Dock Finder</h1>
+  <div class="page-header">
+    <h1>Santander Cycles - Bike and Dock Finder</h1>
+    <button class="info-btn" onclick="openInfo()" aria-label="About this app">
+      <span class="material-symbols-outlined">info</span>
+    </button>
+  </div>
+  <div id="infoModal" class="info-modal hidden" onclick="handleModalClick(event)">
+    <div class="info-sheet">
+      <button class="info-close" onclick="closeInfo()" aria-label="Close">
+        <span class="material-symbols-outlined">cancel</span>
+      </button>
+      <h2>Bike and Dock Finder</h2>
+      <p>Shows the nearest Santander Cycles docking stations to your current location. Displayed are the closest docking stations with a standard (non-electric) bike, the closest with a free dock space, and the closest with an e-bike.</p>
+	  <p><br>Swipe each card to see the 2nd and 3rd nearest options. 
+	  <p><br>Tap a map to open directions in Google Maps.</p>
+    </div>
+  </div>
   <div id="root"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -614,6 +706,18 @@
       }
 
       renderCards(withStdBikes.slice(0, 3), withEbikes.slice(0, 3), withSpaces.slice(0, 3), updatedAt);
+    }
+
+    function openInfo() {
+      document.getElementById('infoModal').classList.remove('hidden');
+    }
+
+    function closeInfo() {
+      document.getElementById('infoModal').classList.add('hidden');
+    }
+
+    function handleModalClick(e) {
+      if (e.target === document.getElementById('infoModal')) closeInfo();
     }
 
     init();

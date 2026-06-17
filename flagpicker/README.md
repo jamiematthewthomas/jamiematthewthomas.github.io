@@ -20,3 +20,5 @@ Installable as a PWA (`manifest.json`, `sw.js`, and icon files) for adding to a 
 ## Look
 
 The app's accent colour is navy (`#0f298e`) — used for the page background and the submit button. Text on the navy background (the title and footer) is semi-transparent white; the flag name, subtitles, and other text inside the white cards stays black or grey.
+
+An info button (top right of the title bar) opens a modal explaining the game.

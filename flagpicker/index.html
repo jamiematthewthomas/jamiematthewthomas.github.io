@@ -254,6 +254,80 @@
       text-decoration: underline;
     }
 
+    .page-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-btn {
+      position: absolute;
+      right: 0;
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.82);
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .info-btn .material-symbols-outlined,
+    .info-close .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    .info-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 24px;
+    }
+
+    .info-modal.hidden { display: none; }
+
+    .info-sheet {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 420px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .info-sheet h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 12px;
+      padding-right: 28px;
+    }
+
+    .info-sheet p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .info-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #aaa;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .hidden {
       display: none;
     }
@@ -262,7 +336,12 @@
 </head>
 <body>
   <div class="app">
-    <h1>Flag Picker</h1>
+    <div class="page-header">
+      <h1>Flag Picker</h1>
+      <button class="info-btn" onclick="openInfo()" aria-label="About this game">
+        <span class="material-symbols-outlined">info</span>
+      </button>
+    </div>
 
     <div class="flag-card" id="flagCard">
       <h2 class="flag-name hidden" id="flagName"></h2>
@@ -307,6 +386,17 @@
     </div>
   </div>
 
+  <div id="infoModal" class="info-modal hidden" onclick="handleModalClick(event)">
+    <div class="info-sheet">
+      <button class="info-close" onclick="closeInfo()" aria-label="Close">
+        <span class="material-symbols-outlined">cancel</span>
+      </button>
+      <h2>Flag Picker</h2>
+      <p>A daily guessing game where each day a flag is shown with one section missing. Use the colour picker to choose what colour you think belongs there, then submit your guess.</p>
+	  <p><br>You're scored 0–100 based on how close your guess is to the actual colour.</p>
+	  <p><br>Come back each day for a new flag!</p>
+    </div>
+  </div>
   <script src="flags.js"></script>
   <script src="puzzles.js"></script>
   <script>
@@ -537,6 +627,18 @@
       }
 
       updateStats(state);
+    }
+
+    function openInfo() {
+      document.getElementById('infoModal').classList.remove('hidden');
+    }
+
+    function closeInfo() {
+      document.getElementById('infoModal').classList.add('hidden');
+    }
+
+    function handleModalClick(e) {
+      if (e.target === document.getElementById('infoModal')) closeInfo();
     }
 
     colorPicker.addEventListener('input', () => {
