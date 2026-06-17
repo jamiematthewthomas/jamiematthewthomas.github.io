@@ -6,13 +6,6 @@ const FLAGS_DATA = {
     ],
     "svg": `<path fill="#006a4e" d="M0 0h640v480H0z"/><circle cx="280" cy="240" r="160" fill="#f42a41"/>`
   },
-  "Switzerland": {
-    "shapes": [
-      { "id": "bg", "fill": "red" },
-      { "id": "cross", "fill": "#fff" }
-    ],
-    "svg": `<g fill-rule="evenodd" stroke-width="1pt"><path fill="red" d="M0 0h640v480H0z"/><g fill="#fff"><path d="M170 195h300v90H170z"/><path d="M275 90h90v300h-90z"/></g></g>`
-  },
   "Denmark": {
     "shapes": [
       { "id": "bg", "fill": "#c8102e" },
