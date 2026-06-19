@@ -14,7 +14,7 @@ A daily, Wordle-style game. Each day shows a flag with one section (a stripe, cr
 
 ## Tech
 
-No framework, no build step — HTML, CSS, and JS are all inline in `index.html`, with flag and puzzle data in separate `.js` files (loaded via `<script src>` so the page also works over `file://`).
+No framework, no build step — HTML, CSS, and JS are all inline in `index.html`, with flag and puzzle data in separate `.js` files (loaded via `<script src>` so the page also works over `file://`). The colour picker is [Coloris](https://github.com/mdbassit/Coloris), loaded from CDN and used in inline mode so it's always visible rather than opening as a popup.
 
 Installable as a PWA (`manifest.json`, `sw.js`, and icon files) for adding to a mobile home screen.
 
