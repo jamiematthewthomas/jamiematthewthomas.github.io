@@ -10,6 +10,7 @@ A daily, Wordle-style game. Each day shows a flag with one section (a stripe, cr
 - After submitting, the picker card is replaced by a single result card showing the flag's name, then the whole flag twice side by side — once with your guessed colour and once with the actual colour — along with your score and a "Come back tomorrow for a new flag" note.
 - Your guess is scored 0–100 based on the Euclidean distance between your guess and the actual colour in RGB space, using exponential decay so close guesses score highly and wildly wrong guesses drop off quickly. A one-line caption with an emoji reacts to the score, getting harsher the further off you are.
 - Results and streaks are stored in `localStorage` (no cookies) — one play per day, with the streak continuing only if you played the previous day too. The current streak is shown in the footer alongside a "Written by Jamie Thomas" credit.
+- A "Share score" button appears in the result card. It uses `navigator.share()` on mobile (native share sheet) and falls back to copying to the clipboard on desktop, with the button label briefly changing to "Copied!" to confirm. The share text includes the date, flag name, score, and a link to `jamiethomas.dev/flagfill/`.
 
 ## Tech
 

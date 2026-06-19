@@ -10,3 +10,5 @@ Personal GitHub Pages site. `index.html` is a landing page linking to the projec
 ## Deployment
 
 Hosted on GitHub Pages. Any push to `main` goes live automatically.
+
+Development happens on the `uat` branch. Pushing to `uat` triggers the [Sync UAT](.github/workflows/sync-uat.yml) workflow, which copies the branch contents into a `uat/` directory on `main` — making the in-progress version accessible at `/uat/` on the live site for review before merging to `main`.
