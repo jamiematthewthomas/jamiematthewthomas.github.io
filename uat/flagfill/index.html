@@ -13,6 +13,7 @@
   <link rel="apple-touch-icon" href="icon_with_border.svg">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=block">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -72,12 +73,6 @@
       border-radius: 8px;
     }
 
-    .picker-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
     .material-symbols-outlined {
       font-family: 'Material Symbols Outlined';
       font-size: 16px;
@@ -85,78 +80,22 @@
       font-variation-settings: 'opsz' 20, 'wght' 400, 'FILL' 0, 'GRAD' 0;
     }
 
-    .color-picker-wrap {
-      position: relative;
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
-      flex-shrink: 0;
+    /*
+     * Coloris overrides: stretch to card width and remove the popup shadow.
+     * width: 100% is safe here because the gradient area is a CSS div whose
+     * offsetWidth Coloris reads at runtime — not a canvas with fixed pixel
+     * dimensions. Must NOT use flexbox centering on #pickerRow: Coloris's
+     * inline mode omits the picker.offsetLeft term when computing colorAreaDims,
+     * so any gap between #pickerRow's left edge and the picker's left edge
+     * shifts all click positions by that amount.
+     */
+    #clr-picker {
+      box-shadow: none !important;
+      width: 100% !important;
     }
 
-    .picker-row.unset .color-picker-wrap {
-      background: #eef4fa;
-      border: 1px solid #cdd9ec;
-    }
-
-    .color-picker-icon {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      font-size: 28px;
-      color: #666;
-    }
-
-    .picker-row:not(.unset) .color-picker-icon {
-      display: none;
-    }
-
-    input[type="color"] {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 0;
-      cursor: pointer;
-      background: none;
-    }
-
-    .picker-row.unset input[type="color"] {
-      opacity: 0;
-    }
-
-    .hex-input {
-      flex: 1;
-      min-width: 0;
-      height: 56px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 20px;
-      font-weight: 600;
-      color: #111;
-      text-transform: uppercase;
-      text-align: center;
-      letter-spacing: 0.04em;
-      background: #eef4fa;
-      border: 1px solid #cdd9ec;
-      border-radius: 12px;
-      padding: 0 12px;
-      cursor: default;
-    }
-
-    .hex-input:focus {
-      outline: none;
-    }
-
-    .hex-input::placeholder {
-      color: #999;
-      text-transform: none;
-      letter-spacing: normal;
-      font-weight: 500;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    .clr-gradient {
+      height: 160px !important;
     }
 
     button {
@@ -357,15 +296,9 @@
     <div class="flag-card" id="flagCard">
       <svg id="flagSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet"></svg>
       <h2 class="flag-name hidden" id="flagName"></h2>
-      <p class="subtitle" id="subtitle">Fill in the flag's missing section</p>
-      <div class="picker-row unset" id="pickerRow">
-        <div class="color-picker-wrap">
-          <input type="color" id="colorPicker" value="#D9D9D9">
-          <span class="material-symbols-outlined color-picker-icon">colors</span>
-        </div>
-        <input type="text" class="hex-input" id="hexInput" placeholder="← Use the colour picker" readonly>
-      </div>
-      <button class="primary" id="submitBtn">Submit guess</button>
+      <p class="subtitle" id="subtitle">Use the colour picker below to fill in the flag's missing section</p>
+      <div id="pickerRow"></div>
+      <button class="primary" id="submitBtn" disabled>Submit guess</button>
     </div>
 
     <div class="result hidden" id="result">
@@ -391,7 +324,7 @@
         <span class="material-symbols-outlined">share</span>
         <span id="shareBtnLabel">Share score</span>
       </button>
-      <p class="subtitle" id="subtitleResult">Come back tomorrow for a new flag</p>
+      <p class="subtitle" id="subtitleResult">Come back tomorrow for a new flag!</p>
     </div>
 
     <div class="stats">
@@ -408,10 +341,11 @@
       </button>
       <h2>Flag Fill</h2>
       <p>A daily guessing game where each day a flag is shown with one section missing. Use the colour picker to choose what colour you think belongs there, then submit your guess.</p>
-	  <p><br>You're scored 0–100 based on how close your guess is to the actual colour.</p>
-	  <p><br>Come back each day for a new flag!</p>
+      <p><br>You're scored 0–100 based on how close your guess is to the actual colour.</p>
+      <p><br>Come back each day for a new flag!</p>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
   <script src="flags.js"></script>
   <script src="puzzles.js"></script>
   <script>
@@ -419,10 +353,8 @@
     const EPOCH = new Date(2026, 5, 15); // 2026-06-15, first curated puzzle
 
     const svg = document.getElementById('flagSvg');
-    const colorPicker = document.getElementById('colorPicker');
-    const hexInput = document.getElementById('hexInput');
-    const pickerRow = document.getElementById('pickerRow');
     const submitBtn = document.getElementById('submitBtn');
+    let pickedColor = '';
     const flagName = document.getElementById('flagName');
     const flagNameResult = document.getElementById('flagNameResult');
     const flagCard = document.getElementById('flagCard');
@@ -486,7 +418,7 @@
       svg.innerHTML = MISSING_PATTERN + flag.svg;
       svg.querySelectorAll('[fill]').forEach(el => {
         if (cssColorToHex(el.getAttribute('fill')) === targetHex) {
-          el.setAttribute('fill', revealed ? target.fill : (hasPicked ? colorPicker.value : 'url(#missing)'));
+          el.setAttribute('fill', revealed ? target.fill : (hasPicked ? pickedColor : 'url(#missing)'));
         }
       });
     }
@@ -506,21 +438,9 @@
       });
     }
 
-    function normalizeHex(value) {
-      let h = value.trim().replace(/^#/, '').toUpperCase();
-      if (/^[0-9A-F]{3}$/.test(h)) h = h.split('').map(c => c + c).join('');
-      return /^[0-9A-F]{6}$/.test(h) ? '#' + h : null;
-    }
-
-    function setColor(hex) {
-      colorPicker.value = hex;
-      hexInput.value = hex;
-      renderFlag(false);
-    }
-
     function markPicked() {
       hasPicked = true;
-      pickerRow.classList.remove('unset');
+      submitBtn.disabled = false;
     }
 
     function hexToRgb(hex) {
@@ -585,7 +505,7 @@
       const today = new Date();
       const todayStr = formatDate(today);
 
-      const guess = colorPicker.value.toUpperCase();
+      const guess = pickedColor.toUpperCase();
       const actual = cssColorToHex(current.flag.shapes[current.idx].fill);
       const score = scoreFromDistance(colorDistance(guess, actual));
 
@@ -631,8 +551,7 @@
       flagName.classList.remove('hidden');
 
       const state = loadState();
-      colorPicker.value = '#D9D9D9';
-      hexInput.value = '';
+      pickedColor = '';
 
       if (state.lastDate === todayStr) {
         flagCard.classList.add('hidden');
@@ -687,15 +606,44 @@
       if (e.target === document.getElementById('infoModal')) closeInfo();
     }
 
-    colorPicker.addEventListener('input', () => {
+    document.addEventListener('coloris:pick', (event) => {
+      pickedColor = event.detail.color;
       markPicked();
-      hexInput.value = colorPicker.value.toUpperCase();
       renderFlag(false);
     });
 
-submitBtn.addEventListener('click', submitGuess);
+    submitBtn.addEventListener('click', submitGuess);
 
+    // init() must run before Coloris() so that #flagName is already visible and
+    // the layout is settled when Coloris calls updatePickerPosition(). If Coloris
+    // runs first, colorAreaDims is computed before #flagName shifts #pickerRow
+    // down, and all gradient clicks land at the bottom-right corner.
+    //
+    // Within the options object, parent must come before inline: Coloris processes
+    // keys in insertion order, and the inline case fires updatePickerPosition()
+    // immediately — before parent has set the container, so offset defaults to
+    // {x:0, y:0} and colorAreaDims is computed relative to nothing.
     init();
+
+    Coloris({
+      parent: '#pickerRow',
+      inline: true,
+      format: 'hex',
+      alpha: false,
+      swatches: [
+        '#F5F5F5', // off-white
+        '#1C1C1C', // near-black
+        '#CC1A2E', // red
+        '#8C1C30', // dark red / maroon
+        '#F08500', // orange
+        '#F5CC00', // yellow
+        '#0A9648', // green
+        '#0A7540', // dark green
+        '#6AAAD8', // sky blue
+        '#1042AA', // royal blue
+        '#0A3272', // navy
+      ],
+    });
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
