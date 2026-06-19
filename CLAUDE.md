@@ -9,6 +9,11 @@ A personal GitHub Pages site hosting a small collection of single-page web apps,
 
 Across all projects: no build step, no package manager, no other framework — each app's HTML, CSS, and JS are inline in its `index.html`, with CDN dependencies where needed.
 
+## Branching and deployment
+
+- **`main`** — production branch, served live by GitHub Pages. Direct commits go live immediately.
+- **`uat`** — development branch for in-progress work. Pushing to `uat` triggers `.github/workflows/sync-uat.yml`, which copies the branch contents into a `uat/` directory on `main` (excluding `.git`, `.github`, `CNAME`, `README.md`, and `CLAUDE.md`). This makes the in-progress version accessible at `/uat/` on the live site for review before merging to `main`.
+
 ## Landing page
 
 The root `index.html` lists each app as a `.link-card` — an icon (that app's `icon_with_border.svg`) next to a label, title, and description. Each card carries a `red` or `blue` modifier class matching the app's accent colour (`.link-card.red .link-label` is `#e31837` for Bike/Dock Finder, `.link-card.blue .link-label` is `#0f298e` for Flag Fill), so the cards visually match their respective apps.
@@ -155,6 +160,24 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 Material Symbols Outlined loaded from Google Fonts (`fonts.googleapis.com/css2?family=Material+Symbols+Outlined`), with `display=block` (not `display=swap`) to avoid a flash of the icon name as text before the font loads. A `preconnect` hint to `fonts.gstatic.com` is included so the font file connection is established early. Used for the `colors` icon shown inside `.color-picker-wrap` while the picker is in its unset state, and the `info` / `cancel` icons for the info modal.
 
 Font variation settings pinned to `opsz=20, wght=400, FILL=0, GRAD=0`.
+
+## Sharing
+
+A "Share score" button (`.share-btn`, `#shareBtn`) sits in `#result` between the score feedback and the "Come back tomorrow" subtitle. `shareScore()` builds the share text from `loadState()` (for `lastScore`) and `current.flag.name`, then:
+
+1. Tries `navigator.share({ title, text, url })` — triggers the native share sheet on mobile.
+2. Falls back to `navigator.clipboard.writeText()` on desktop — the button label (`#shareBtnLabel`) switches to "Copied!" for 2 s then resets.
+
+Share text format:
+```
+Flag Fill · 19 Jun 2026
+France — 87/100
+Great guess! 👏
+
+https://jamiethomas.dev/flagfill/
+```
+
+The URL is hardcoded to `https://jamiethomas.dev/flagfill/`. `formatShareDate()` formats the date as `D Mon YYYY` from the local `Date` object.
 
 ## Info modal
 

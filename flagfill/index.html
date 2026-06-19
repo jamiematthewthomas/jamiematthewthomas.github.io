@@ -328,6 +328,17 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    .share-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .share-btn .material-symbols-outlined {
+      font-size: 18px;
+    }
+
     .hidden {
       display: none;
     }
@@ -376,6 +387,10 @@
         <span class="score-max">/ 100</span>
       </div>
       <div class="score-feedback" id="scoreFeedback"></div>
+      <button class="primary share-btn" id="shareBtn" onclick="shareScore()">
+        <span class="material-symbols-outlined">share</span>
+        <span id="shareBtnLabel">Share score</span>
+      </button>
       <p class="subtitle" id="subtitleResult">Come back tomorrow for a new flag</p>
     </div>
 
@@ -627,6 +642,37 @@
       }
 
       updateStats(state);
+    }
+
+    function formatShareDate(d) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function shareScore() {
+      const state = loadState();
+      const score = state.lastScore;
+      const flagNameText = current.flag.name;
+      const feedback = feedbackForScore(score);
+      const date = formatShareDate(new Date());
+      const url = 'https://jamiethomas.dev/flagfill/';
+      const shareText = `Flag Fill · ${date}\n${flagNameText} — ${score}/100\n${feedback}`;
+
+      const label = document.getElementById('shareBtnLabel');
+      const btn = document.getElementById('shareBtn');
+
+      if (navigator.share) {
+        navigator.share({ title: 'Flag Fill', text: shareText, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(shareText + '\n\n' + url).then(() => {
+          label.textContent = 'Copied!';
+          btn.disabled = true;
+          setTimeout(() => {
+            label.textContent = 'Share score';
+            btn.disabled = false;
+          }, 2000);
+        }).catch(() => {});
+      }
     }
 
     function openInfo() {
