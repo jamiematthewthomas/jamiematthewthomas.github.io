@@ -139,15 +139,25 @@ Flag and puzzle data live in `flags.js`/`puzzles.js` as `const FLAGS_DATA = {...
 
 `renderFlag()` injects `MISSING_PATTERN` (a checkerboard `<pattern>` def, sized for the flags' `0 0 640 480` viewBox) plus the flag's `svg` markup into `#flagSvg`, then walks `[fill]` elements and replaces the one matching the target shape's fill with either the checkerboard pattern, the player's live colour pick, or (once revealed) the actual fill.
 
-A `hasPicked` flag tracks whether the player has interacted with the colour picker yet. Until then, `renderFlag()` always shows the checkerboard pattern, regardless of `colorPicker.value`. The `input` event on the colour picker calls `markPicked()`, which sets `hasPicked = true` and removes the `.unset` class from `#pickerRow`. When `.unset`, the native `input[type="color"]` is `opacity: 0` (invisible but still fully clickable) and a `colors` Material Symbol is overlaid via `.color-picker-icon` inside `.color-picker-wrap`; the wrapper is styled to match the hex input (light blue background, border). Once a colour is picked the icon hides and the native colour picker swatch shows normally. The hex input is read-only with `placeholder="← Use the colour picker"` and is updated via JS to reflect the chosen hex.
+A `hasPicked` flag tracks whether the player has interacted with the colour picker yet. Until then, `renderFlag()` always shows the checkerboard pattern. The `coloris:pick` event (dispatched on `document` by the Coloris library; `event.detail.color` holds the picked hex) sets `pickedColor`, calls `markPicked()` (sets `hasPicked = true`, enables the submit button), then re-renders the flag so the live pick replaces the checkerboard.
+
+## Colour picker
+
+The colour picker is [Coloris](https://github.com/mdbassit/Coloris) (`mdbassit/Coloris`), loaded from jsDelivr (`cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/`). It's initialised in inline mode (`inline: true`) with `parent: '#pickerRow'`, so it appends `#clr-picker` as a permanent child of the `#pickerRow` div — always visible, no popup. `alpha: false` disables the opacity slider. The picked colour is stored in the `pickedColor` JS variable (not in an input element's value); `pickedColor` starts as `''` and is populated only when the `coloris:pick` event fires. Two CSS overrides on `#clr-picker` remove the popup box-shadow and stretch it to full card width (`width: 100% !important`). `.clr-gradient` height is overridden to `120px` to give a larger colour area than the default. `touch-action: none` is also applied to `.clr-gradient` so that horizontal swipes on mobile are passed straight to JavaScript rather than being claimed as scroll gestures by the browser — without it, horizontal movement in the gradient is suppressed on iOS and the marker is stuck at the left edge. The gradient is a CSS div (not a canvas), so stretching it with CSS correctly updates `colorAreaDims.width` (which reads `offsetWidth`) and click positions scale proportionally.
+
+Swatches cover the main families of colour found in world flags: red (`#CC1A2E`), dark red/maroon (`#8C1C30`), orange (`#F08500`), yellow (`#F5CC00`), green (`#0A9648`), dark green (`#0A7540`), sky blue (`#6AAAD8`), royal blue (`#1042AA`), navy (`#0A3272`). Each is deliberately offset from any known exact flag colour — e.g. away from Argentina's `#74ACDF`, USA's `#002868`, and Ukraine's `#FFD700` — so that clicking a swatch never yields a free perfect score.
+
+Two subtle ordering constraints apply to the initialisation at the bottom of the script:
+
+1. **`init()` must run before `Coloris({...})`** — `init()` unhides `#flagName`, which shifts `#pickerRow` down the page. Coloris calls `updatePickerPosition()` (which records `colorAreaDims`) when the `inline` option is processed; if that happens before the layout settles, the stored gradient coordinates are wrong and all clicks land at the bottom-right corner.
+
+2. **`parent` must come before `inline` in the options object** — Coloris processes options in insertion order. The `inline` case triggers `updatePickerPosition()` immediately; if `parent` hasn't been processed yet, `container` is still null, `offset` defaults to `{x:0, y:0}`, and `colorAreaDims` is computed relative to nothing.
 
 ## Result view
 
 After a guess (or on revisiting after already playing today), `#flagCard` (the picker card) is hidden and `#result` is shown — a single card so only one is visible at a time. `#result` repeats the flag name in `#flagNameResult` (since `#flagName` is hidden along with `#flagCard`), then renders the flag twice via `renderFlagInto(el, fillValue)`, which injects `flag.svg` into the given `<svg>` and sets the target shape's fill directly to `fillValue` (no checkerboard pattern, unlike `renderFlag()`): once into `#guessFlagSvg` with the player's guessed colour, and once into `#actualFlagSvg` with the actual colour, side by side via `.flag-pair`/`.flag-col`.
 
-`#flagCard` has its own subtitle, `#subtitle`, reading "Fill in the flag's missing section" — shown above the picker row. `#result` has a separate one, `#subtitleResult`, reading "Come back tomorrow for a new flag" — shown below the score feedback. Both use the `.subtitle` class.
-
-`cssColorToHex()` normalizes any CSS colour value (named colours like `red`, shorthand hex like `#fc0`, etc.) to `#RRGGBB` via an off-screen probe element + `getComputedStyle`, so fill-matching and scoring work regardless of how a colour is expressed in the source SVG.
+`cssColorToHex()` normalizes any CSS colour value (named colours like `red`, shorthand hex like `#fc0`, etc.) to `#rrggbb` (lowercase) via an off-screen probe element + `getComputedStyle`, so fill-matching and scoring work regardless of how a colour is expressed in the source SVG. Hex values displayed in the result view (`.swatch-hex`) use `text-transform: lowercase` to match the colour picker's output.
 
 ## Scoring
 
@@ -157,7 +167,7 @@ Euclidean RGB distance, converted to a 0–100 score via exponential decay (`sco
 
 ## Icons
 
-Material Symbols Outlined loaded from Google Fonts (`fonts.googleapis.com/css2?family=Material+Symbols+Outlined`), with `display=block` (not `display=swap`) to avoid a flash of the icon name as text before the font loads. A `preconnect` hint to `fonts.gstatic.com` is included so the font file connection is established early. Used for the `colors` icon shown inside `.color-picker-wrap` while the picker is in its unset state, and the `info` / `cancel` icons for the info modal.
+Material Symbols Outlined loaded from Google Fonts (`fonts.googleapis.com/css2?family=Material+Symbols+Outlined`), with `display=block` (not `display=swap`) to avoid a flash of the icon name as text before the font loads. A `preconnect` hint to `fonts.gstatic.com` is included so the font file connection is established early. Used for the `info` / `cancel` icons for the info modal.
 
 Font variation settings pinned to `opsz=20, wght=400, FILL=0, GRAD=0`.
 
@@ -191,5 +201,4 @@ Same pattern as Bike/Dock Finder (see above): `.page-header` wraps the `h1` with
 - The footer shows the current streak and a "Written by Jamie Thomas" credit (`#statsText` + `.byline-link`).
 - Page background is the app's navy accent (`#0f298e`), matched by the PWA manifest's `background_color`. Text rendered directly on it (`h1`, `.stats`, `.byline-link`) uses semi-transparent white rather than the greys used for text inside cards.
 - The navy accent (`#0f298e`) is also used for `button.primary`, the `theme-color` meta tag, and the manifest's `theme_color`. The flag name (`.flag-name`) stays black (`#111`) inside its white card rather than navy, to avoid the page being all one colour.
-- `colorPicker.value` defaults to `#D9D9D9` internally (so the native colour picker has a sensible starting swatch), but this is hidden from the player until they interact — see `hasPicked`/`markPicked()` above.
 - `#flagName` lives inside `#flagCard`, above `#flagSvg`, so it's hidden along with the rest of the picker card once a guess has been made — `#flagNameResult` (inside `#result`) shows the same name afterwards.
