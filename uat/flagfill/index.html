@@ -424,11 +424,35 @@
       const target = flag.shapes[idx];
       const targetHex = cssColorToHex(target.fill);
       svg.innerHTML = MISSING_PATTERN + flag.svg;
+      let missingEl = null;
       svg.querySelectorAll('[fill]').forEach(el => {
         if (cssColorToHex(el.getAttribute('fill')) === targetHex) {
-          el.setAttribute('fill', revealed ? target.fill : (hasPicked ? pickedColor : 'url(#missing)'));
+          const fillValue = revealed ? target.fill : (hasPicked ? pickedColor : 'url(#missing)');
+          el.setAttribute('fill', fillValue);
+          if (!revealed && !hasPicked) missingEl = el;
         }
       });
+      // Some flags (e.g. South Korea) define shapes inside a scaled and/or
+      // rotated coordinate space. patternUnits="userSpaceOnUse" measures the
+      // tile in that local space, which can make tiles too large (solid grey)
+      // or appear tilted on screen. Apply the inverse of the local-to-root
+      // transform as a patternTransform so tiles are always axis-aligned and
+      // the same visual size regardless of the shape's coordinate space.
+      if (missingEl) {
+        const svgCTM = svg.getCTM();
+        const elCTM = missingEl.getCTM();
+        if (svgCTM && elCTM) {
+          const svgScale = Math.hypot(svgCTM.a, svgCTM.b);
+          const ratio = Math.hypot(elCTM.a, elCTM.b) / svgScale;
+          if (ratio > 1.5) {
+            const pa = elCTM.a / svgScale, pb = elCTM.b / svgScale;
+            const pc = elCTM.c / svgScale, pd = elCTM.d / svgScale;
+            const det = pa * pd - pb * pc;
+            const ia = pd / det, ib = -pb / det, ic = -pc / det, id = pa / det;
+            svg.querySelector('#missing').setAttribute('patternTransform', `matrix(${ia},${ib},${ic},${id},0,0)`);
+          }
+        }
+      }
     }
 
     // Renders the full flag into a result-view <svg>, with the target shape's
