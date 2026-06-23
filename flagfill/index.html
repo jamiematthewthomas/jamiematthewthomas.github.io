@@ -303,8 +303,8 @@
     </div>
 
     <div class="flag-card" id="flagCard">
-      <h2 class="flag-name hidden" id="flagName"></h2>
       <svg id="flagSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet"></svg>
+	  <h2 class="flag-name hidden" id="flagName"></h2>
       <div id="pickerRow"></div>
       <button class="primary" id="submitBtn" disabled>Submit guess</button>
     </div>
@@ -660,6 +660,7 @@
     Coloris({
       parent: '#pickerRow',
       inline: true,
+	  defaultColor: '#0f298e', // the page background colour
       format: 'hex',
       alpha: false,
       swatches: [
