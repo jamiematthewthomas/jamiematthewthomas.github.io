@@ -10,6 +10,8 @@ const PUZZLES_DATA = [
   { "date": "2026-06-23", "flag": "Antigua and Barbuda", "shapeId": "middle" },
   { "date": "2026-06-24", "flag": "Cyprus", "shapeId": "map" },
   { "date": "2026-06-25", "flag": "South Korea", "shapeId": "circle_lower" },
-  { "date": "2026-06-26", "flag": "India", "shapeId": "top" }
+  { "date": "2026-06-26", "flag": "India", "shapeId": "top" },
+  { "date": "2026-06-27", "flag": "Sierra Leone", "shapeId": "top" },
+  { "date": "2026-06-28", "flag": "Cape Verde", "shapeId": "bar" }
 ]
 ;
