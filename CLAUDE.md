@@ -163,7 +163,9 @@ After a guess (or on revisiting after already playing today), `#flagCard` (the p
 
 ## Scoring
 
-Euclidean RGB distance, converted to a 0–100 score via exponential decay (`scoreFromDistance`): `100 * exp(-5 * (distance/maxDistance)^2)`. This is deliberately more forgiving for close guesses and harsher for distant ones than a linear scale.
+CIE Lab ΔE76 distance, converted to a 0–100 score via exponential decay (`scoreFromDistance`): `100 * exp(-5 * (distance/235)^2)`. Lab is perceptually uniform, so equal numerical distances correspond to equal perceived colour differences — correcting RGB's tendency to over-penalise blues and mis-score colours that look similar but differ in one channel. The max of 235 is the true ceiling of ΔE76 within the sRGB gamut (yellow vs blue), so the curve spans the full perceptual range and difficulty is comparable to the old RGB scoring. The exponential decay is deliberately more forgiving for close guesses and harsher for distant ones than a linear scale.
+
+`hexToLab()` implements the conversion pipeline: sRGB → linear RGB (gamma expansion via the standard piecewise threshold `0.04045`) → XYZ D65 → Lab (piecewise cube-root with threshold `0.008856`).
 
 `feedbackForScore()` maps the score to a one-line caption with an emoji, shown alongside the score: 100 is "Perfect score! 🤯", 95-99 "Incredible work! 😎", 85-94 "Great guess! 👏", 75-84 "Good guess 🙂", then deliberately harsher below that — 60-74 "Not great 😬", 40-59 "Pretty bad 😞", under 40 "Way off! 💀".
 
