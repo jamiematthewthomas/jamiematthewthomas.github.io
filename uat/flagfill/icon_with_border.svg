@@ -5,7 +5,7 @@
    viewBox="0 0 400 400"
    version="1.1"
    id="svg4"
-   sodipodi:docname="flagfill_icon.svg"
+   sodipodi:docname="flagfill_icon_with_larger_margin.svg"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      showgrid="true"
-     inkscape:zoom="2.8325001"
-     inkscape:cx="174.75728"
-     inkscape:cy="167.16681"
+     inkscape:zoom="2.00288"
+     inkscape:cx="161.76705"
+     inkscape:cy="224.9261"
      inkscape:window-width="2560"
      inkscape:window-height="1351"
      inkscape:window-x="2551"
@@ -48,10 +48,13 @@
        visible="true" />
   </sodipodi:namedview>
   <rect
-     width="400"
-     height="400"
+     width="439.99997"
+     height="439.99997"
      fill="#0f298e"
-     id="rect1" />
+     id="rect1"
+     x="-20"
+     y="-20"
+     style="stroke-width:1" />
   <!-- Stripe 1: white -->
   <rect
      x="15"
