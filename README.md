@@ -5,7 +5,7 @@ Personal GitHub Pages site. `index.html` is a landing page linking to the projec
 ## Projects
 
 - **[`santandercycles/`](santandercycles/README.md)** — Bike/Dock Finder, a web app showing the nearest Santander Cycles docking stations to your current location.
-- **[`flagfill/`](flagfill/README.md)** — Flag Fill, a daily Wordle-style game where you guess the colour of a missing section of a flag.
+- **[flagfill.com](https://flagfill.com)** — Flag Fill, a daily Wordle-style game where you guess the colour of a missing section of a flag. Hosted separately at flagfill.com; `flagfill/` in this repo just redirects there.
 
 ## Deployment
 
