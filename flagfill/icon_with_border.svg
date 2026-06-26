@@ -24,8 +24,8 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="true"
      inkscape:zoom="2.00288"
-     inkscape:cx="161.76705"
-     inkscape:cy="224.9261"
+     inkscape:cx="44.935293"
+     inkscape:cy="190.47571"
      inkscape:window-width="2560"
      inkscape:window-height="1351"
      inkscape:window-x="2551"
@@ -57,21 +57,21 @@
      style="stroke-width:1" />
   <!-- Stripe 1: white -->
   <rect
-     x="15"
-     y="50"
-     width="110"
-     height="300"
-     rx="19.799999"
+     x="50"
+     y="78.409004"
+     width="89.189186"
+     height="243.24326"
+     rx="16.054054"
      fill="#ffffff"
      id="rect2"
-     style="stroke-width:1;fill:#f5f3ee;fill-opacity:1" />
+     style="fill:#f5f3ee;fill-opacity:1;stroke-width:0.999997" />
   <!-- Stripe 2: dashed/missing (centre) -->
   <rect
-     x="147.9995"
-     y="53"
-     width="103.95868"
-     height="294"
-     rx="18.712563"
+     x="157.83743"
+     y="80.841446"
+     width="84.290817"
+     height="238.37836"
+     rx="15.172348"
      fill="none"
      stroke="#ffffff"
      stroke-width="5.99999"
@@ -82,23 +82,23 @@
   <!-- Question mark -->
   <text
      x="200"
-     y="225"
+     y="220.30089"
      text-anchor="middle"
      dominant-baseline="middle"
      font-family="Georgia, 'Times New Roman', serif"
-     font-size="140"
+     font-size="113.514px"
      font-weight="700"
      fill="#ffffff"
      id="text3"
-     style="fill:#f5f3ee;fill-opacity:1">?</text>
+     style="fill:#f5f3ee;fill-opacity:1;stroke-width:0.999997">?</text>
   <!-- Stripe 3: red -->
   <rect
-     x="275"
-     y="50"
-     width="110"
-     height="300"
-     rx="19.799999"
+     x="260.81079"
+     y="78.409004"
+     width="89.189186"
+     height="243.24326"
+     rx="16.054054"
      fill="#d93025"
      id="rect4"
-     style="stroke-width:1" />
+     style="stroke-width:0.999997" />
 </svg>
